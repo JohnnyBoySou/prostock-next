@@ -73,6 +73,8 @@ export default function StoreSelection() {
   )
 }
 
+
+
 const CardStore = ({ item }) => {
   const router = useRouter()
   const handleStoreSelect = async (store) => {
