@@ -27,7 +27,7 @@ export default function Auth() {
       await loginUser(email, password)
       router.push('/stores')
     } catch (error: any) {
-      setError(error.message)
+      setError('E-mail ou senha incorretos.')
     } finally {
       setIsLoading(false)
     }
@@ -85,7 +85,7 @@ export default function Auth() {
         </CardContent>
         <CardFooter className='flex-col'>
           <Button onClick={handleSubmit} disabled={isLoading} className="w-full" style={{ backgroundColor: '#019866', }}>
-            {isLoading ? 'Entrando' : 'Entrar'}
+            {isLoading ? 'Enviando' : 'Entrar'}
           </Button>
           {error && <div className='bg-red-200  mt-2 py-2 px-4 w-max  rounded-md'><p className="text-red-500">{error}</p></div>}
         <a className='underline text-gray-500 align-middle text-center mt-4'>Esqueci minha senha</a>
