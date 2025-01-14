@@ -23,7 +23,7 @@
         "**/next.config.mjs": true,
         "**/eslint.config.js": true,
         "**/public": true,
-        "**/app/favicon.ico": true,
+        "**/app/favicon.ico": false,
         "**/app/globals.css": true,
         "**/app/font.css": true,
         "**/app/layout.tsx": false,

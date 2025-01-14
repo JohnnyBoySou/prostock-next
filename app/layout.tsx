@@ -14,12 +14,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-br">
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+      </head>
       <body className="font-mundial">
         <ReactQueryProvider>
-        {children}
-          </ReactQueryProvider>
+          {children}
+        </ReactQueryProvider>
       </body>
     </html>
   )
 }
-
