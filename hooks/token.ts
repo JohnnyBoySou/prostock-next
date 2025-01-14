@@ -8,3 +8,7 @@ export const getToken = () => {
   return localStorage.getItem('authToken');
 };
 
+export const deleteToken = () => {
+  localStorage.removeItem('authToken');
+  return true;
+}

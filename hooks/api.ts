@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { getToken } from "../hooks/token";
 import { getStore } from "../hooks/store";
+import { useRouter } from "next/navigation";
 
 const baseURL = "https://stock.engenhariadigital.net/api";
 
@@ -44,10 +45,14 @@ export async function fetchWithAuth<T = unknown>(
   url: string,
   options: FetchApiOptions = {}
 ): Promise<ApiResponse<T>> {
+  const router = useRouter();
   try {
-    const token = await getToken();
+    const token = getToken();
+    console.log(token)
     const store = await getStore();
     if (!token) {
+      console.log('sem token')
+      router.push("/login");
       throw new Error("Authentication token not found.");
     }
 
