@@ -11,20 +11,18 @@ import colors from '../colors'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useQuery } from '@tanstack/react-query'
+import { getToken } from '@/hooks/token'
 
 export default function StoreSelection() {
   const router = useRouter()
   const [store, setstore] = useState();
 
-  const { data: stores, isLoading, refetch: handleSearch } = useQuery({
+  const { data: stores, isLoading, error} = useQuery({
     queryKey: [`list stores`],
-    queryFn: async () => { const res = await listStore(); return res.data; }
+    queryFn: async () => { const res = await listStore(); return res.data;  }
   });
 
-  useEffect(() => {
-    fetchStore();
-  }, [])
-
+ 
   const fetchStore = async () => {
     try {
       const res = await getStore();
@@ -33,6 +31,25 @@ export default function StoreSelection() {
       console.log(error);
     }
   }
+
+  const fetchUser = async () => {
+    try {
+      const res = await getToken();
+      if (!res) { 
+        router.push('/')
+      }
+      console.log(res)
+      setUser(res);
+    } catch (error) {
+      console.log(error);
+    }
+   }
+
+
+  useEffect(() => {
+    fetchUser();
+    fetchStore();
+  }, [])
 
   return (
     <div className="mx-auto align-middle justify-center items-center flex flex-col px-6 max-w-[440px]">
@@ -72,7 +89,7 @@ const CardStore = ({ item }) => {
   return (
     <Card className="cursor-pointer flex-row justify-between max-w-[440px] mb-4 items-center flex hover:shadow-lg transition-shadow bg-white border rounded-lg " onClick={() => handleStoreSelect(item)}>
       <CardHeader>
-        <CardTitle>{nome}</CardTitle>
+        <CardTitle>{nome?.length > 24 ? nome.slice(0,24) + '...' : nome}</CardTitle>
         <CardDescription>{endereco} • <Badge className='uppercase' variant={status == 'ativo' ? 'default' : 'secondary'}>{status}</Badge>
         </CardDescription>
       </CardHeader>

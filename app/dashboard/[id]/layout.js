@@ -5,19 +5,17 @@ import colors from '@/app/colors'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { ChevronRight, LogOut, Store } from 'lucide-react';
 
-export default function DashLayout({
-  children,
-}) {
-
+export default function DashLayout({children}) {
   const router = useRouter()
   const handleLogout = () => {
     try {
-      localStorage.removeItem('token')
+      deleteToken();
+      excludeStore();
       router.push('/')
     } catch (error) {
+      console.log(error);
     }
   }
 
@@ -83,9 +81,9 @@ const SelectCardStore = ({ item }) => {
     <div onClick={handleStore} className="flex-row ml-8 hidden sm:flex justify-between w-[300px] py-2 px-3 items-center cursor-pointer transition-shadow rounded-lg"
       style={{ backgroundColor: '#ffffff20', }}>
       <div>
-        <h2 className='text-white text-md -mb-1'>{nome}</h2>
+        <h2 className='text-white text-md -mb-2'>{nome?.length > 20 ? nome.slice(0, 20) + '...' : nome}</h2>
         <span
-          className='text-white opacity-75 text-sm -mt-1'>{endereco}
+          className='text-white opacity-75 text-sm -mt-2'>{endereco}
         </span>
       </div>
 

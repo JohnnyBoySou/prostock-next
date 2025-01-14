@@ -4,11 +4,11 @@ export const createToken = async (token: string) => {
   localStorage.setItem('authToken', token);
 };
 
-export const getToken = () => {
+export const  getToken = async () => {
   return localStorage.getItem('authToken');
 };
 
-export const deleteToken = () => {
+export const deleteToken = async () => {
   localStorage.removeItem('authToken');
   return true;
 }

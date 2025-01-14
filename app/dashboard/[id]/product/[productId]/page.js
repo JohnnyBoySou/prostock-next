@@ -20,7 +20,7 @@ export default function ProductReportPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+        <span>Carregando...</span>
       </div>
     )
   }
@@ -37,15 +37,13 @@ const Store = ({ item }) => {
   const { nome, status, descricao, estoque_maximo, estoque_minimo, unidade } = item
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl">{nome}</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className='border mt-4 px-4 py-4 rounded-lg'>
+        <h2 style={{ fontSize: 28, lineHeight: 1, marginTop: -8, }}>{nome}</h2>
+      <div>
         <p className="text-gray-600">{descricao} - {status} - {unidade}</p>
         <p className="text-gray-600">Máx: {estoque_maximo} - Mín: {estoque_minimo}</p>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 

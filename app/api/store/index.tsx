@@ -17,9 +17,11 @@ export const listStore = async (page: number = 1) => {
     try {
         const res = await fetchWithAuth("/usuarios/loja" + "?page=" + page, {
             method: "GET", 
-         });
+        });
+        console.log(res) 
         return res;
     } catch (error: any) {
+        console.log(error)
         throw new Error(error.message);
     }
 }

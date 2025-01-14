@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { ChevronRight, LogOut, Store } from 'lucide-react';
 import { deleteToken } from '@/hooks/token';
+import { excludeStore } from '@/hooks/store';
 
 export default function StoresLayout({
   children,
@@ -15,7 +16,8 @@ export default function StoresLayout({
   const router = useRouter()
   const handleLogout = () => {
     try {
-      const res = deleteToken();
+      deleteToken();
+      excludeStore();
       router.replace('/')
     } catch (error) {
     }
