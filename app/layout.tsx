@@ -2,8 +2,8 @@ import './globals.css'
 import './font.css'
 
 export const metadata = {
-  title: 'Store Management Dashboard',
-  description: 'Manage your stores and view statistics',
+  title: 'ProStock',
+  description: 'Gerencie suas lojas e veja relatórios',
 }
 import ReactQueryProvider from '@/lib/provider';
 
