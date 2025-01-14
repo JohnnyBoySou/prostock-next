@@ -38,8 +38,6 @@ export default function StoreSelection() {
       if (!res) { 
         router.push('/')
       }
-      console.log(res)
-      setUser(res);
     } catch (error) {
       console.log(error);
     }
@@ -79,7 +77,7 @@ const CardStore = ({ item }) => {
   const router = useRouter()
   const handleStoreSelect = async (store) => {
     try {
-      const res = await selectStore(store)
+      await selectStore(store)
       router.push(`/dashboard/${store.id}`)
     } catch (error) {
       console.log(error)
@@ -108,7 +106,7 @@ const SelectCardStore = ({ item }) => {
     <Card className=" flex-row justify-between max-w-[440px] items-center flex hover:shadow-lg transition-shadow rounded-lg"
       style={{ backgroundColor: colors.color.primary, }}>
       <CardHeader>
-        <CardTitle className='text-white'>{nome}</CardTitle>
+        <CardTitle className='text-white'>{nome.length > 20 ? nome.slice(0,20) + '...' : nome}</CardTitle>
         <CardDescription
           className='text-white'>{endereco} • <Badge className='uppercase' variant={status == 'ativo' ? 'default' : 'secondary'}>{status}</Badge>
         </CardDescription>
