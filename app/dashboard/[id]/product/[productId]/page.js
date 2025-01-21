@@ -54,7 +54,8 @@ const Charts = ({ data }) => {
     name: mes.mes.slice(0, 3),
     ocupacao: mes.estoque_ocupado,
     entrada: mes.entrada,
-    saida: mes.saida
+    saida: mes.saida,
+    perdas: mes.perdas
   }))
 
   return (
@@ -70,7 +71,7 @@ const Charts = ({ data }) => {
         title="Entrada"
         data={chartData}
         dataKey="entrada"
-        color="#FFB238"
+        color="#019866"
         maxValue={Math.max(...chartData.map(item => item.entrada))}
       />
       <ChartCard
@@ -79,6 +80,13 @@ const Charts = ({ data }) => {
         dataKey="saida"
         color="#3590F3"
         maxValue={Math.max(...chartData.map(item => item.saida))}
+      />
+      <ChartCard
+        title="Perdas"
+        data={chartData}
+        dataKey="perdas"
+        color="#FFB238"
+        maxValue={Math.max(...chartData.map(item => item.perdas))}
       />
     </div>
   )
