@@ -11,9 +11,10 @@ interface Report extends Record<string, unknown> {
     observacoes: string;
 }
 
-const formatDateForLaravel = (date: string) => {
+const formatDateForLaravel = (date: string | null = null) => {
+    if(!date) return null;
     const [day, month, year] = date.split("/");
-   return `${year}-${month}-${day}`;
+    return `${year}-${month}-${day}`;
 };
 
 //LISTAGEM COM DATA
@@ -50,7 +51,6 @@ export const showReportStore = async (id: number, fornecedor_id: string, produto
             {
             method: "GET", 
         });
-        console.log(res)
         return res;
     } catch (error: any) {
         throw new Error(error.message);
@@ -79,6 +79,30 @@ export const showReportSupplier = async (id: number, lojaid: number) => {
         });
         return res;
     } catch (error: any) {
+        throw new Error(error.message);
+    }
+}
+
+export const showReportProductLine = async (produto_id: number, lojaid: number, fornecedor_id: number | null = null, datac: string | null = null, dataf: string | null = null, tab: string) => {
+   // const c = formatDateForLaravel(datac); 
+   // const f = formatDateForLaravel(dataf);
+    const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : 'entrada'
+    try {
+        const res: any = await fetchWithAuthOtherStore("/usuarios/estatisticas/linechat", {
+            method: "GET",
+            headers: { "lojaid": lojaid.toString() },
+            params: {
+                "fornecedor_id": fornecedor_id,
+                "produto_id": produto_id,
+                "datac": datac,
+                "dataf":dataf,
+                "tipo": type,
+            },
+        });
+        const lineData = res?.data?.map((item: any) => { return { value: parseInt(item?.value), label: item?.label } });
+        return lineData;
+    } catch (error: any) {
+        console.log(error.request)
         throw new Error(error.message);
     }
 }

@@ -2,25 +2,22 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer , Cell} from 'recharts'
+import { BarChart, LineChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
+
 import { Check, ChevronRight, LayoutGrid, Truck, Users } from 'lucide-react'
-import { showReportStore } from '@/app/api/report'
-import { listReportProduct } from '@/app/api/report'
+import { showReportStore, showReportProductLine, listReportProduct } from '@/app/api/report'
 import Link from 'next/link'
 import colors from '@/app/colors'
 import { Button } from '@/components/ui/button';
 
+import Tabs from '@/components/custom/tabs'
 
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { listSupplierStore } from '@/app/api/supplier'
@@ -34,12 +31,22 @@ export default function DashboardPage() {
   const [dateF, setdateF] = useState(dateNow);
 
   const [fornecedor, setfornecedor] = useState();
-  const [produto, setproduto] = useState();
+
+  const [tab, settab] = useState('Saída');
+  const types = ['Saída', 'Entrada', 'Perdas',];
 
   const { data, isLoading, refetch: refetchStore } = useQuery({
     queryKey: ["stores report single", id],
-    queryFn: () => showReportStore(id, fornecedor, produto)
+    queryFn: () => showReportStore(id, fornecedor)
   })
+
+  const { data: line, isLoading: loadingDay, refetch } = useQuery({
+    queryKey: ["stores report daylist single", id, fornecedor, tab, dateC, dateF],
+    queryFn: async () => {
+      const res = await showReportProductLine(null, id, fornecedor, dateC, dateF, tab);
+      return res;
+    }
+  });
 
   const { data: products, isLoading: loadingProducts, refetch: refetchProduct } = useQuery({
     queryKey: ["product list store", id],
@@ -47,14 +54,18 @@ export default function DashboardPage() {
   })
   const { data: suppliers, isLoading: loadingSuppliers } = useQuery({
     queryKey: ["supplier list store", id],
-    queryFn: () => listSupplierStore(id, 1,) 
+    queryFn: () => listSupplierStore(id, 1,)
   })
-
 
   const handleSearch = () => {
     refetchStore();
     refetchProduct()
   }
+
+
+  useEffect(() => {
+    refetch();
+  }, [fornecedor, tab, dateC, dateF]);
 
   if (isLoading) {
     return (
@@ -66,8 +77,9 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <Store item={data} suppliers={suppliers} setdateC={setdateC} setdateF={setdateF} handleSearch={handleSearch} dateC={dateC} dateF={dateF} setfornecedor={setfornecedor} fornecedor={fornecedor}/>
-      <Charts data={data} />
+      <Store item={data} suppliers={suppliers} setdateC={setdateC} setdateF={setdateF} handleSearch={handleSearch} dateC={dateC} dateF={dateF} setfornecedor={setfornecedor} fornecedor={fornecedor} />
+      <Tabs types={types} value={tab} setValue={settab} />
+      <SingleCharts data={data} tab={tab} line={line} loadingDay={loadingDay} />
       <Items data={products?.data} storeId={id} />
     </div>
   )
@@ -80,7 +92,7 @@ const Store = ({ item, fornecedor, suppliers, setfornecedor, setdateC, setdateF,
     const { id, status, cidade, id_loja, nome_fantasia, } = item;
     return (
       <div onClick={() => { setfornecedor(fornecedor === id ? '' : id) }} style={{ marginBottom: 10, }}>
-        <div pv={20} className='flex-row flex justify-between items-center'  style={{ backgroundColor: '#FFF', padding: 12,  borderRadius: 8, borderWidth: 2, borderColor: fornecedor == id ? colors.color.green : '#D1D1D1' }}>
+        <div pv={20} className='flex-row flex justify-between items-center' style={{ backgroundColor: '#FFF', padding: 12, borderRadius: 8, borderWidth: 2, borderColor: fornecedor == id ? colors.color.green : '#D1D1D1' }}>
           <div gv={6} className='flex-col flex'>
             <span size={20} fontFamily='Font_Medium'>{nome_fantasia?.length > 32 ? nome_fantasia?.slice(0, 32) + '...' : nome_fantasia}</span>
             <span style={{ opacity: .6, }}>{cidade} • {status} </span>
@@ -150,9 +162,9 @@ const Store = ({ item, fornecedor, suppliers, setfornecedor, setdateC, setdateF,
               ))}
             </ScrollArea>
 
-              <DrawerClose>
-                <Button onClick={handleSearch} style={{ backgroundColor: colors.color.primary, width: '100%', marginTop: 20,  fontSize: 18, height: 52,  }}>Definir filtros</Button>
-              </DrawerClose>
+            <DrawerClose>
+              <Button onClick={handleSearch} style={{ backgroundColor: colors.color.primary, width: '100%', marginTop: 20, fontSize: 18, height: 52, }}>Definir filtros</Button>
+            </DrawerClose>
           </DrawerContent>
         </Drawer>
       </CardContent>
@@ -208,6 +220,141 @@ const ChartCard = ({ title, data, dataKey, color, maxValue }) => (
   </Card>
 )
 
+
+
+const SingleCharts = ({ data, tab, line, loadingDay }) => {
+  if (!data || !line) return null;
+
+  const meses = data?.meses || [];
+
+  // Dados para os gráficos
+  const ocupacao = meses.map((mes) => ({
+    value: mes.estoque_ocupado,
+    label: mes.mes.slice(0, 3),
+    frontColor: '#FF1828',
+  }));
+
+  const entrada = meses.map((mes) => ({
+    value: mes.entrada,
+    label: mes.mes.slice(0, 3),
+    frontColor: '#019866',
+  }));
+
+  const saida = meses.map((mes) => ({
+    value: mes.saida,
+    label: mes.mes.slice(0, 3),
+    frontColor: '#3590F3',
+  }));
+
+  const perdas = meses.map((mes) => ({
+    value: mes.perdas,
+    label: mes.mes.slice(0, 3),
+    frontColor: '#FFB238',
+  }));
+
+  const selectData =
+    tab === 'Saída' ? saida :
+      tab === 'Entrada' ? entrada :
+        tab === 'Perdas' ? perdas :
+          tab === 'Ocupação' ? ocupacao :
+            null;
+
+  return (
+    <div style={{ gap: '20px', display: 'flex', flexDirection: 'column' }}>
+      {/* Gráfico de Linha */}
+      <div style={{ backgroundColor: '#FFF', borderRadius: 8, padding: 20 }}>
+        <div style={{ marginBottom: 12 }}>
+          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}>Gráfico de Linha</h3>
+          <p>Por data selecionada</p>
+        </div>
+        {loadingDay ? (
+          <p>Carregando...</p>
+        ) : (
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={line}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="label" tick={{ fill: 'gray', fontSize: 12 }} />
+              <YAxis tick={{ fill: 'gray', fontSize: 12 }} />
+                <Tooltip />
+              <Line type="monotone" dataKey="value" stroke={selectData[0].frontColor} strokeWidth={3} 
+              name="Valores"/>
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      {/* Gráfico de Barras */}
+      <div style={{ backgroundColor: '#FFF', borderRadius: 8, padding: 20 }}>
+        <div style={{ marginBottom: 12 }}>
+          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}>Gráfico de Barras</h3>
+          <p>Últimos 3 meses</p>
+        </div>
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={selectData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="label" tick={{ fill: 'gray', fontSize: 12 }} />
+            <YAxis tick={{ fill: 'gray', fontSize: 12 }} />
+            <Tooltip />
+            <Legend displayName='Valor'/>
+            <Bar
+              dataKey="value"
+              name="Valores"
+              shape={(props) => {
+                const { fill, x, y, width, height, payload } = props;
+                return (
+                  <rect
+                    x={x}
+                    y={y}
+                    width={width}
+                    height={height}
+                    fill={payload.frontColor}
+                    radius={4}
+                  />
+                );
+              }}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Tabela */}
+      <div style={{ backgroundColor: '#FFF', borderRadius: 8, padding: 20 }}>
+        <div style={{ marginBottom: 12 }}>
+          <h3>Tabela</h3>
+          <p>Últimos 3 meses</p>
+        </div>
+        <div style={{ borderRadius: 6, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', backgroundColor: '#000', padding: 4, color: '#F1F1F1' }}>
+            <div style={{ width: '30%', textAlign: 'center' }}>Data</div>
+            <div style={{ width: '70%', textAlign: 'center' }}>Valor</div>
+          </div>
+          {selectData.map((item, index) => (
+            <div
+              key={index}
+              style={{
+                display: 'flex',
+                backgroundColor: index % 2 ? '#f1f1f1' : '#FFF',
+                padding: 4,
+              }}
+            >
+              <div style={{ width: '30%', textAlign: 'center' }}>{item.label}</div>
+              <div style={{ width: '70%', textAlign: 'center' }}>{item.value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+
+
+
+
+
+
+
 const Items = ({ data, storeId }) => {
   if (!data || data.length === 0) {
     return <div className="text-center py-8">Nenhum produto encontrado.</div>
@@ -254,6 +401,8 @@ const ProductCard = ({ item, storeId }) => {
             <YAxis />
             <Tooltip />
             <Bar
+              
+              name="Valores"
               dataKey="value"
               maxBarSize={52}
               isAnimationActive={true}
