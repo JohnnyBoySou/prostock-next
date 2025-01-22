@@ -9,14 +9,14 @@ export default function Tabs({ types, setValue, value }) {
           style={{
             justifyContent: 'center', alignItems: 'center',
             padding: '10px 20px',
-            borderBottomWidth: 4, borderBottomColor: value === type ? '#019866' : 'transparent',
+            backgroundColor: value === type ? '#019866' : '#01986610',
             cursor: 'pointer',
-            borderRadius:'6px 6px 0px 0px',
-            backgroundColor: value === type ? '#01986610':'#fff',
+            borderRadius: 8,
+            margin: '0px 12px 0px 0px',
           }}>
           <span style={{
             fontSize: 16,
-            color: value === type ? '#019866' : '#8C8C8C',
+            color: value === type ? '#fff' : '#019866',
             textTransform: 'uppercase',
           }}>{type}</span>
         </div>

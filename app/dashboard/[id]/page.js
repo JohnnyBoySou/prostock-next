@@ -6,7 +6,7 @@ import { BarChart, LineChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, R
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
-import { Check, ChevronRight, LayoutGrid, Truck, Users } from 'lucide-react'
+import { Check, ChevronRight, LayoutGrid, Search, Truck, Users } from 'lucide-react'
 import { showReportStore, showReportProductLine, listReportProduct } from '@/app/api/report'
 import Link from 'next/link'
 import colors from '@/app/colors'
@@ -20,7 +20,9 @@ import {
   DrawerContent,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { listSupplierStore } from '@/app/api/supplier'
+
+import { listSupplierStoreSearch } from '@/app/api/supplier'
+import { listProductStoreSearch } from '@/app/api/product'
 
 export default function DashboardPage() {
   const params = useParams()
@@ -31,41 +33,54 @@ export default function DashboardPage() {
   const [dateF, setdateF] = useState(dateNow);
 
   const [fornecedor, setfornecedor] = useState();
+  const [produto, setproduto] = useState();
 
   const [tab, settab] = useState('Saída');
   const types = ['Saída', 'Entrada', 'Perdas',];
 
-  const { data, isLoading, refetch: refetchStore } = useQuery({
+  const { data: store, isLoading, } = useQuery({
     queryKey: ["stores report single", id],
-    queryFn: () => showReportStore(id, fornecedor)
+    queryFn: () => showReportStore(id)
   })
 
   const { data: line, isLoading: loadingDay, refetch } = useQuery({
     queryKey: ["stores report daylist single", id, fornecedor, tab, dateC, dateF],
     queryFn: async () => {
-      const res = await showReportProductLine(null, id, fornecedor, dateC, dateF, tab);
+      const res = await showReportProductLine(produto, id, fornecedor, dateC, dateF, tab);
+      return res;
+    },
+    enabled: false
+  });
+
+
+  const handleSearch = () => {
+    refetch();
+  }
+
+  const ultimoMes = new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0];
+
+  const { data: perdas, isLoading: loadingPerdas, } = useQuery({
+    queryKey: ["stores perdas"],
+    queryFn: async () => {
+      const res = await showReportProductLine(null, id, null, ultimoMes, dateNow, 'Perdas');
+      return res;
+    }
+  });
+  const { data: entradas, isLoading: loadingEntradas, } = useQuery({
+    queryKey: ["stores entradas"],
+    queryFn: async () => {
+      const res = await showReportProductLine(null, id, null, ultimoMes, dateNow, 'Entrada');
+      return res;
+    }
+  });
+  const { data: saidas, isLoading: loadingSaidas, } = useQuery({
+    queryKey: ["stores saidas"],
+    queryFn: async () => {
+      const res = await showReportProductLine(null, id, null, ultimoMes, dateNow, 'Saída');
       return res;
     }
   });
 
-  const { data: products, isLoading: loadingProducts, refetch: refetchProduct } = useQuery({
-    queryKey: ["product list store", id],
-    queryFn: () => listReportProduct(id, 1, dateC, dateF)
-  })
-  const { data: suppliers, isLoading: loadingSuppliers } = useQuery({
-    queryKey: ["supplier list store", id],
-    queryFn: () => listSupplierStore(id, 1,)
-  })
-
-  const handleSearch = () => {
-    refetchStore();
-    refetchProduct()
-  }
-
-
-  useEffect(() => {
-    refetch();
-  }, [fornecedor, tab, dateC, dateF]);
 
   if (isLoading) {
     return (
@@ -77,31 +92,136 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <Store item={data} suppliers={suppliers} setdateC={setdateC} setdateF={setdateF} handleSearch={handleSearch} dateC={dateC} dateF={dateF} setfornecedor={setfornecedor} fornecedor={fornecedor} />
-      <Tabs types={types} value={tab} setValue={settab} />
-      <SingleCharts data={data} tab={tab} line={line} loadingDay={loadingDay} />
-      <Items data={products?.data} storeId={id} />
+      <Store item={store} types={types} tab={tab} settab={settab} setdateC={setdateC} setdateF={setdateF} handleSearch={handleSearch} dateC={dateC} dateF={dateF}
+        setfornecedor={setfornecedor} fornecedor={fornecedor}
+        setproduto={setproduto} produto={produto}
+      />
+      {line ? <SingleCharts data={store} tab={tab} line={line} loadingDay={loadingDay} /> :
+        <PlaceChart entradas={entradas} saidas={saidas} perdas={perdas} />}
     </div>
   )
 }
 
-const Store = ({ item, fornecedor, suppliers, setfornecedor, setdateC, setdateF, dateC, dateF, handleSearch }) => {
-  const { nome, status, cidade, estado, cnpj, funcionarios, produtos, fornecedores } = item
+const PlaceChart = ({ entradas, saidas, perdas }) => {
+  if (!entradas || !saidas || !perdas) return null;
+
+  return (
+    <div style={{ gap: '20px', display: 'flex', paddingBottom: 20, marginBottom: 50, flexDirection: 'column', borderWidth: 2, borderColor: '#f1f1f1', margin: '0px 26px', borderRadius: 8, }}>
+      <div style={{ marginBottom: 12 }}>
+        <h3 style={{ fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: -20, marginTop: 20, }}>Resumo dos últimos 30 dias</h3>
+      </div>
+      <div style={{ borderRadius: 8, padding: 20 }}>
+        <div style={{ marginBottom: 12 }}>
+          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}>Saída de produtos</h3>
+          <p style={{ opacity: .6 }}>Últimos 30 dias</p>
+        </div>
+
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={saidas}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="label" tick={{ fill: 'gray', fontSize: 12 }} />
+            <YAxis tick={{ fill: 'gray', fontSize: 12 }} />
+            <Tooltip />
+            <Line type="monotone" dataKey="value" stroke='#3590F3' strokeWidth={3}
+              name="Valores" />
+          </LineChart>
+        </ResponsiveContainer>
+
+      </div>
+
+      <div style={{ borderRadius: 8, padding: 20 }}>
+        <div style={{ marginBottom: 12 }}>
+          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}>Entrada de produtos</h3>
+          <p style={{ opacity: .6 }}>Últimos 30 dias</p>
+        </div>
+
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={entradas}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="label" tick={{ fill: 'gray', fontSize: 12 }} />
+            <YAxis tick={{ fill: 'gray', fontSize: 12 }} />
+            <Tooltip />
+            <Line type="monotone" dataKey="value" stroke='#019866' strokeWidth={3}
+              name="Valores" />
+          </LineChart>
+        </ResponsiveContainer>
+
+      </div>
+
+      <div style={{ borderRadius: 8, padding: 20 }}>
+        <div style={{ marginBottom: 12 }}>
+          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}>Perdas de produtos</h3>
+          <p style={{ opacity: .6 }}>Últimos 30 dias</p>
+        </div>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={perdas}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="label" tick={{ fill: 'gray', fontSize: 12 }} />
+            <YAxis tick={{ fill: 'gray', fontSize: 12 }} />
+            <Tooltip />
+            <Line type="monotone" dataKey="value" stroke='#FFB238' strokeWidth={3}
+              name="Valores" />
+          </LineChart>
+        </ResponsiveContainer>
+
+      </div>
+    </div>
+  );
+};
+
+
+
+
+const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto, produto, setdateC, setdateF, dateC, dateF, handleSearch }) => {
+  const { nome, status, cidade, estado, cnpj, funcionarios, produtos, fornecedores, id } = item
   const CardSupplier = ({ item }) => {
     if (!item) return null;
     const { id, status, cidade, id_loja, nome_fantasia, } = item;
     return (
       <div onClick={() => { setfornecedor(fornecedor === id ? '' : id) }} style={{ marginBottom: 10, }}>
-        <div pv={20} className='flex-row flex justify-between items-center' style={{ backgroundColor: '#FFF', padding: 12, borderRadius: 8, borderWidth: 2, borderColor: fornecedor == id ? colors.color.green : '#D1D1D1' }}>
+        <div pv={20} className='flex-row flex justify-between items-center' style={{ backgroundColor: fornecedor == id ? colors.color.primary + 10 : '#FFF', padding: 8, borderRadius: 8, borderWidth: 2, borderColor: fornecedor == id ? colors.color.green : '#D1D1D1' }}>
           <div gv={6} className='flex-col flex'>
             <span size={20} fontFamily='Font_Medium'>{nome_fantasia?.length > 32 ? nome_fantasia?.slice(0, 32) + '...' : nome_fantasia}</span>
             <span style={{ opacity: .6, }}>{cidade} • {status} </span>
           </div>
-          <Check color={fornecedor == id ? colors.color.primary : '#fff'} />
+          <div style={{ width: 46, height: 46, backgroundColor: fornecedor == id ? colors.color.primary : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
+            <Check size={28} color='#fff' />
+          </div>
         </div>
       </div>
     )
   }
+  const CardProduct = ({ item }) => {
+    if (!item) return null;
+    const { id, status, descricao, nome, unidade } = item;
+    return (
+      <div onClick={() => { setproduto(produto === id ? '' : id) }} style={{ marginBottom: 10, }}>
+        <div className='flex-row flex justify-between items-center' style={{ backgroundColor: produto == id ? colors.color.primary + 10 : '#FFF', padding: 8, borderRadius: 8, borderWidth: 2, borderColor: produto == id ? colors.color.green : '#D1D1D1' }}>
+          <div className='flex-col flex'>
+            <span >{nome?.length > 32 ? nome?.slice(0, 32) + '...' : nome}</span>
+            <span style={{ opacity: .6, }}>{unidade} • {status} </span>
+          </div>
+          <div style={{ width: 46, height: 46, backgroundColor: produto == id ? colors.color.primary : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
+            <Check size={28} color='#fff' />
+          </div>
+        </div>
+      </div>
+    )
+  }
+  const { data: products, isLoading: loadingProducts, refetch: searchProduct } = useQuery({
+    queryKey: ["product list store", id],
+    queryFn: () => listProductStoreSearch(id, productName)
+  })
+  const { data: suppliers, isLoading: loadingSuppliers, refetch: searchSupplier } = useQuery({
+    queryKey: ["supplier list store", id],
+    queryFn: () => listSupplierStoreSearch(id, fornecedorName)
+  })
+
+  const [productName, setproductName] = useState('');
+  const [fornecedorName, setfornecedorName] = useState('');
+
+
+
   return (
     <Card>
       <CardHeader>
@@ -117,58 +237,122 @@ const Store = ({ item, fornecedor, suppliers, setfornecedor, setdateC, setdateF,
         </div>
         <Drawer>
           <DrawerTrigger style={{ alignItems: 'center', alignSelf: 'center', height: 56, borderRadius: 8, backgroundColor: colors.color.primary, justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20, }}>
-            <span style={{ fontSize: 18, color: '#fff' }}>Ver filtros</span>
+            <span style={{ fontSize: 18, color: '#fff' }}>Gerar gráfico</span>
           </DrawerTrigger>
           <DrawerContent className='py-6 px-12' >
-            <span style={{ fontSize: 32, fontWeight: 500, }}>Filtrar por data</span>
-            <div style={{ display: 'flex', flexDirection: 'row', gap: 16 }}>
-              <div>
-                <label htmlFor="dateC" style={{ display: 'block', marginBottom: 8 }}>Data de início:</label>
-                <input
-                  type="date"
-                  id="dateC"
-                  value={dateC}
-                  defaultValue={dateC}
-                  onChange={(e) => setdateC(e.target.value)}
-                  style={{
-                    padding: 8,
-                    borderRadius: 4,
-                    border: '1px solid #ccc',
-                    width: '100%',
-                  }}
-                />
+            <h2 style={{ fontSize: 32, fontWeight: 600, textAlign: 'center', margin: '0px 0px 10px 0px', }}>Gerar gráfico</h2>
+            <div style={{ flexDirection: 'row', display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ flexDirection: 'column', display: 'flex' }}>
+                <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por tipo</span>
+                <span style={{ fontSize: 16, opacity: .6, marginBottom: 6, }}>Selecione apenas um por vez</span>
+                <Tabs types={types} value={tab} setValue={settab} />
               </div>
               <div>
-                <label htmlFor="dateF" style={{ display: 'block', marginBottom: 8 }}>Data de fim:</label>
-                <input
-                  type="date"
-                  id="dateF"
-                  value={dateF}
-                  defaultValue={dateC}
-                  onChange={(e) => setdateF(e.target.value)}
-                  style={{
-                    padding: 8,
-                    borderRadius: 4,
-                    border: '1px solid #ccc',
-                    width: '100%',
-                  }}
-                />
+                <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por data</span>
+                <div style={{ display: 'flex', flexDirection: 'row', gap: 16 }}>
+                  <div>
+                    <label htmlFor="dateC" style={{ display: 'block', marginBottom: 8, opacity: .6, }}>Data de início:</label>
+                    <input
+                      type="date"
+                      id="dateC"
+                      value={dateC}
+                      defaultValue={dateC}
+                      onChange={(e) => setdateC(e.target.value)}
+                      style={{
+                        padding: 8,
+                        borderRadius: 4,
+                        border: '2px solid #ccc',
+                        width: '100%',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="dateF" style={{ display: 'block', marginBottom: 8, opacity: .6, }}>Data de fim:</label>
+                    <input
+                      type="date"
+                      id="dateF"
+                      value={dateF}
+                      defaultValue={dateC}
+                      onChange={(e) => setdateF(e.target.value)}
+                      style={{
+                        padding: 8,
+                        borderRadius: 4,
+                        border: '2px solid #ccc',
+                        width: '100%',
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-            <span style={{ fontSize: 32, fontWeight: 500, marginTop: 20, }}>Filtrar por fornecedor</span>
-            <ScrollArea style={{ maxHeight: 200, marginTop: 16, }}>
-              {suppliers?.map((item) => (
-                <CardSupplier key={item.id} item={item} />
-              ))}
-            </ScrollArea>
+
+            <div style={{ marginTop: 10, }}>
+              <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por fornecedor</span>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: 12, marginTop: 12, marginBottom: 12, }}>
+                <input
+                  type="search"
+                  id="fornecedorName"
+                  value={fornecedorName}
+                  defaultValue={fornecedorName}
+                  onChange={(e) => setfornecedorName(e.target.value)}
+                  placeholder='Ex: Nova Era Ltda'
+                  onKeyDown={(e) => { if (e.key === 'Enter') searchSupplier() }}
+                  style={{
+                    padding: 8,
+                    borderRadius: 6,
+                    border: '2px solid #ccc',
+                    width: '100%',
+                  }}
+                />
+                <div onClick={searchSupplier} style={{ width: 56, height: 52, cursor: 'pointer', display: 'flex', flexDirection: 'column', backgroundColor: colors.color.primary, borderRadius: 6, justifyContent: 'center', alignItems: 'center', }}>
+                  <Search size={24} color='#fff' />
+                </div>
+              </div>
+              <ScrollArea className='h-[160px] ' style={{ marginTop: 16, }}>
+                {suppliers?.slice(0, 10)?.map((item) => (
+                  <CardSupplier key={item.id} item={item} />
+                ))}
+                {suppliers?.length === 0 && <div className="text-center py-8">Nenhum fornecedor encontrado.</div>}
+              </ScrollArea>
+            </div>
+
+            <div style={{}}>
+              <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por produto</span>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: 12, marginTop: 12, marginBottom: 12, }}>
+                <input
+                  type="search"
+                  id="productName"
+                  value={productName}
+                  defaultValue={productName}
+                  onChange={(e) => setproductName(e.target.value)}
+                  placeholder='Ex: Uva'
+                  onKeyDown={(e) => { if (e.key === 'Enter') searchProduct() }}
+                  style={{
+                    padding: 8,
+                    borderRadius: 6,
+                    border: '2px solid #ccc',
+                    width: '100%',
+                  }}
+                />
+                <div onClick={searchProduct} style={{ width: 56, height: 52, cursor: 'pointer', display: 'flex', flexDirection: 'column', backgroundColor: colors.color.primary, borderRadius: 6, justifyContent: 'center', alignItems: 'center', }}>
+                  <Search size={24} color='#fff' />
+                </div>
+              </div>
+              <ScrollArea className='h-[230px]'>
+                {products?.slice(0, 10)?.map((item) => (
+                  <CardProduct key={item.id} item={item} />
+                ))}
+                {products?.length === 0 && <div className="text-center py-8">Nenhum produto encontrado.</div>}
+              </ScrollArea>
+            </div>
 
             <DrawerClose>
-              <Button onClick={handleSearch} style={{ backgroundColor: colors.color.primary, width: '100%', marginTop: 20, fontSize: 18, height: 52, }}>Definir filtros</Button>
+              <Button onClick={handleSearch} style={{ backgroundColor: colors.color.primary, width: '100%', marginTop: 20, fontSize: 18, height: 52, }}>Pronto</Button>
             </DrawerClose>
           </DrawerContent>
         </Drawer>
       </CardContent>
-    </Card>
+    </Card >
   )
 }
 
@@ -220,115 +404,40 @@ const ChartCard = ({ title, data, dataKey, color, maxValue }) => (
   </Card>
 )
 
-
-
 const SingleCharts = ({ data, tab, line, loadingDay }) => {
-  if (!data || !line) return null;
-
-  const meses = data?.meses || [];
-
-  // Dados para os gráficos
-  const ocupacao = meses.map((mes) => ({
-    value: mes.estoque_ocupado,
-    label: mes.mes.slice(0, 3),
-    frontColor: '#FF1828',
-  }));
-
-  const entrada = meses.map((mes) => ({
-    value: mes.entrada,
-    label: mes.mes.slice(0, 3),
-    frontColor: '#019866',
-  }));
-
-  const saida = meses.map((mes) => ({
-    value: mes.saida,
-    label: mes.mes.slice(0, 3),
-    frontColor: '#3590F3',
-  }));
-
-  const perdas = meses.map((mes) => ({
-    value: mes.perdas,
-    label: mes.mes.slice(0, 3),
-    frontColor: '#FFB238',
-  }));
-
-  const selectData =
-    tab === 'Saída' ? saida :
-      tab === 'Entrada' ? entrada :
-        tab === 'Perdas' ? perdas :
-          tab === 'Ocupação' ? ocupacao :
-            null;
-
+  if (!line) return null;
+  
+  const selectColor = tab === 'Saída' ? '#3590F3' : tab === 'Entrada' ? '#019866' : '#FFB238';
   return (
-    <div style={{ gap: '20px', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ gap: '20px', display: 'flex', flexDirection: 'column', borderWidth: 2, borderColor: '#f1f1f1', margin: '0px 26px', borderRadius: 8, marginBottom: 20,}}>
       {/* Gráfico de Linha */}
       <div style={{ backgroundColor: '#FFF', borderRadius: 8, padding: 20 }}>
         <div style={{ marginBottom: 12 }}>
-          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}>Gráfico de Linha</h3>
-          <p>Por data selecionada</p>
+          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}> Gráfico de {tab}</h3>
         </div>
-        {loadingDay ? (
-          <p>Carregando...</p>
-        ) : (
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={line}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="label" tick={{ fill: 'gray', fontSize: 12 }} />
-              <YAxis tick={{ fill: 'gray', fontSize: 12 }} />
-                <Tooltip />
-              <Line type="monotone" dataKey="value" stroke={selectData[0].frontColor} strokeWidth={3} 
-              name="Valores"/>
-            </LineChart>
-          </ResponsiveContainer>
-        )}
-      </div>
-
-      {/* Gráfico de Barras */}
-      <div style={{ backgroundColor: '#FFF', borderRadius: 8, padding: 20 }}>
-        <div style={{ marginBottom: 12 }}>
-          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}>Gráfico de Barras</h3>
-          <p>Últimos 3 meses</p>
-        </div>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={selectData}>
+        <ResponsiveContainer width="100%" height={200} style={{ marginLeft: -30 }}> 
+          <LineChart data={line}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="label" tick={{ fill: 'gray', fontSize: 12 }} />
             <YAxis tick={{ fill: 'gray', fontSize: 12 }} />
             <Tooltip />
-            <Legend displayName='Valor'/>
-            <Bar
-              dataKey="value"
-              name="Valores"
-              shape={(props) => {
-                const { fill, x, y, width, height, payload } = props;
-                return (
-                  <rect
-                    x={x}
-                    y={y}
-                    width={width}
-                    height={height}
-                    fill={payload.frontColor}
-                    radius={4}
-                  />
-                );
-              }}
-            />
-          </BarChart>
+            <Line type="monotone" dataKey="value" stroke={selectColor} strokeWidth={3}
+              name="Valores" />
+          </LineChart>
         </ResponsiveContainer>
       </div>
 
       {/* Tabela */}
-      <div style={{ backgroundColor: '#FFF', borderRadius: 8, padding: 20 }}>
+      <div style={{ backgroundColor: '#FFF', borderRadius: 8, padding: '0px 20px 20px 20px' }}>
         <div style={{ marginBottom: 12 }}>
-          <h3>Tabela</h3>
-          <p>Últimos 3 meses</p>
+          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}>Tabela</h3>
         </div>
-        <div style={{ borderRadius: 6, overflow: 'hidden' }}>
-          <div style={{ display: 'flex', backgroundColor: '#000', padding: 4, color: '#F1F1F1' }}>
-            <div style={{ width: '30%', textAlign: 'center' }}>Data</div>
-            <div style={{ width: '70%', textAlign: 'center' }}>Valor</div>
+        <div style={{ borderRadius: 8, overflow: 'hidden', borderWidth: 2, borderColor: '#d1d1d1', }}>
+          <div style={{ display: 'flex', }}>
+            <div style={{ width: '40%', textAlign: 'center', padding: 6, backgroundColor: '#00000015', color: '#000' }}>Data</div>
+            <div style={{ width: '60%', textAlign: 'center', padding: 6, backgroundColor: '#F1F1F1', color: '#000' }}>Valor</div>
           </div>
-          {selectData.map((item, index) => (
+          {line?.map((item, index) => (
             <div
               key={index}
               style={{
@@ -337,8 +446,8 @@ const SingleCharts = ({ data, tab, line, loadingDay }) => {
                 padding: 4,
               }}
             >
-              <div style={{ width: '30%', textAlign: 'center' }}>{item.label}</div>
-              <div style={{ width: '70%', textAlign: 'center' }}>{item.value}</div>
+              <div style={{ width: '40%', textAlign: 'center' }}>{item.label}</div>
+              <div style={{ width: '60%', textAlign: 'center' }}>{item.value}</div>
             </div>
           ))}
         </div>
@@ -346,14 +455,6 @@ const SingleCharts = ({ data, tab, line, loadingDay }) => {
     </div>
   );
 };
-
-
-
-
-
-
-
-
 
 const Items = ({ data, storeId }) => {
   if (!data || data.length === 0) {
@@ -401,7 +502,7 @@ const ProductCard = ({ item, storeId }) => {
             <YAxis />
             <Tooltip />
             <Bar
-              
+
               name="Valores"
               dataKey="value"
               maxBarSize={52}

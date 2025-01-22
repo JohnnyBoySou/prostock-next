@@ -74,3 +74,12 @@ export const listProductStore = async (id: number, page: number = 1,) => {
         throw new Error(error.message);
     }
 }
+
+export const listProductStoreSearch = async (id: number, name: string,) => {
+    try {
+        const res: any = await fetchWithAuthOtherStore("/usuarios/produto" + "?busca=" + name, { method: "GET", headers: { "lojaid": id.toString() } },);
+        return res?.data;
+    } catch (error: any) {
+        throw new Error(error.message);
+    }
+}

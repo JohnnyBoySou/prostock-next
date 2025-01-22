@@ -50,20 +50,20 @@ export default function StoreSelection() {
   }, [])
 
   return (
-    <div className="mx-auto align-middle justify-center items-center flex flex-col px-6 max-w-[440px]">
+    <div className="mx-auto align-middle justify-center items-center flex flex-col px-6 ">
       <div>
         <h1 className="font-bold mb-4 mt-8" style={{ lineHeight: 1, fontSize: 24, }}>Selecione a loja que deseja visualizar os relatórios</h1>
         {isLoading ? <p>Carregando...</p> :
-          <div className="grid gap-4 max-w-[440px]">
+          <div className="grid gap-4 ">
             {store && <span className='text-gray-500'>Selecionado</span>}
             {store && <SelectCardStore item={store} />}
             {stores?.length > 0 && <span className='text-gray-500'>Lojas disponíveis</span>}
-            <ScrollArea className='h-[400px] max-w-[440px]'>
+            <ScrollArea className='h-[500px]'>
               {stores?.map((store) => (
                 <CardStore item={store} key={store.id} />
               ))}
             </ScrollArea>
-            <Button variant='default' className='max-w-[440px]'  style={{ backgroundColor: colors.color.primary, }} onClick={() => {
+            <Button variant='default' className='h-[54px]'  style={{ backgroundColor: colors.color.primary, fontSize: 18, }} onClick={() => {
               router.push(`/dashboard/${store.id}`)
             }}>Ver relatórios da loja</Button>
           </div>
@@ -72,8 +72,6 @@ export default function StoreSelection() {
     </div>
   )
 }
-
-
 
 const CardStore = ({ item }) => {
   const router = useRouter()
@@ -87,7 +85,7 @@ const CardStore = ({ item }) => {
   }
   const { nome, endereco, status, id } = item;
   return (
-    <Card className="cursor-pointer flex-row justify-between max-w-[440px] mb-4 items-center flex hover:shadow-lg transition-shadow bg-white border rounded-lg " onClick={() => handleStoreSelect(item)}>
+    <Card className="cursor-pointer flex-row justify-between  mb-4 items-center flex hover:shadow-lg transition-shadow bg-white border rounded-lg " onClick={() => handleStoreSelect(item)}>
       <CardHeader>
         <CardTitle>{nome?.length > 24 ? nome.slice(0,24) + '...' : nome}</CardTitle>
         <CardDescription>{endereco} • <Badge className='uppercase' variant={status == 'ativo' ? 'default' : 'secondary'}>{status}</Badge>
@@ -105,7 +103,7 @@ const CardStore = ({ item }) => {
 const SelectCardStore = ({ item }) => {
   const { nome, endereco, status, id } = item;
   return (
-    <Card className=" flex-row justify-between max-w-[440px] items-center flex hover:shadow-lg transition-shadow rounded-lg"
+    <Card className=" flex-row justify-between  items-center flex hover:shadow-lg transition-shadow rounded-lg"
       style={{ backgroundColor: colors.color.primary, }}>
       <CardHeader>
         <CardTitle className='text-white'>{nome.length > 20 ? nome.slice(0,20) + '...' : nome}</CardTitle>

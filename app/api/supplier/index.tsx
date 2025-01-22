@@ -95,8 +95,8 @@ export const listSupplierStore = async (id: number, page: number = 1,) => {
 }
 export const listSupplierStoreSearch = async (id: number, name: string,) => {
     try {
-        const res = await fetchWithAuthOtherStore("/usuarios/fornecedor" + "?busca=" + name, { method: "GET", headers: { "lojaid": id.toString() } },);
-        return res;
+        const res: any = await fetchWithAuthOtherStore("/usuarios/fornecedor" + "?busca=" + name, { method: "GET", headers: { "lojaid": id.toString() } },);
+        return res.data;
     } catch (error: any) {
         throw new Error(error.message);
     }
