@@ -36,7 +36,7 @@ export default function DashboardPage() {
   const [produto, setproduto] = useState();
 
   const [tab, settab] = useState('Saída');
-  const types = ['Saída', 'Entrada', 'Perdas',];
+  const types = [{ name: 'Saída', color: '#3590F3' }, { name: 'Entrada', color: '#019866' }, {name: 'Perdas', color: '#FFB238'} ];
 
   const { data: store, isLoading, } = useQuery({
     queryKey: ["stores report single", id],
@@ -80,7 +80,6 @@ export default function DashboardPage() {
       return res;
     }
   });
-
 
   if (isLoading) {
     return (
@@ -170,8 +169,6 @@ const PlaceChart = ({ entradas, saidas, perdas }) => {
 };
 
 
-
-
 const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto, produto, setdateC, setdateF, dateC, dateF, handleSearch }) => {
   const { nome, status, cidade, estado, cnpj, funcionarios, produtos, fornecedores, id } = item
   const CardSupplier = ({ item }) => {
@@ -179,12 +176,12 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
     const { id, status, cidade, id_loja, nome_fantasia, } = item;
     return (
       <div onClick={() => { setfornecedor(fornecedor === id ? '' : id) }} style={{ marginBottom: 10, }}>
-        <div pv={20} className='flex-row flex justify-between items-center' style={{ backgroundColor: fornecedor == id ? colors.color.primary + 10 : '#FFF', padding: 8, borderRadius: 8, borderWidth: 2, borderColor: fornecedor == id ? colors.color.green : '#D1D1D1' }}>
+        <div pv={20} className='flex-row flex justify-between items-center' style={{ backgroundColor: fornecedor == id ? colors.color.blue + 10 : '#FFF', padding: 8, borderRadius: 8, borderWidth: 2, borderColor: fornecedor == id ? colors.color.blue : '#D1D1D1' }}>
           <div gv={6} className='flex-col flex'>
             <span size={20} fontFamily='Font_Medium'>{nome_fantasia?.length > 32 ? nome_fantasia?.slice(0, 32) + '...' : nome_fantasia}</span>
             <span style={{ opacity: .6, }}>{cidade} • {status} </span>
           </div>
-          <div style={{ width: 46, height: 46, backgroundColor: fornecedor == id ? colors.color.primary : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
+          <div style={{ width: 46, height: 46, backgroundColor: fornecedor == id ? colors.color.blue : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
             <Check size={28} color='#fff' />
           </div>
         </div>
@@ -196,12 +193,12 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
     const { id, status, descricao, nome, unidade } = item;
     return (
       <div onClick={() => { setproduto(produto === id ? '' : id) }} style={{ marginBottom: 10, }}>
-        <div className='flex-row flex justify-between items-center' style={{ backgroundColor: produto == id ? colors.color.primary + 10 : '#FFF', padding: 8, borderRadius: 8, borderWidth: 2, borderColor: produto == id ? colors.color.green : '#D1D1D1' }}>
+        <div className='flex-row flex justify-between items-center' style={{ backgroundColor: produto == id ? colors.color.blue + 10 : '#FFF', padding: 8, borderRadius: 8, borderWidth: 2, borderColor: produto == id ? colors.color.blue : '#D1D1D1' }}>
           <div className='flex-col flex'>
             <span >{nome?.length > 32 ? nome?.slice(0, 32) + '...' : nome}</span>
             <span style={{ opacity: .6, }}>{unidade} • {status} </span>
           </div>
-          <div style={{ width: 46, height: 46, backgroundColor: produto == id ? colors.color.primary : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
+          <div style={{ width: 46, height: 46, backgroundColor: produto == id ? colors.color.blue : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
             <Check size={28} color='#fff' />
           </div>
         </div>
@@ -245,7 +242,27 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
               <div style={{ flexDirection: 'column', display: 'flex' }}>
                 <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por tipo</span>
                 <span style={{ fontSize: 16, opacity: .6, marginBottom: 6, }}>Selecione apenas um por vez</span>
-                <Tabs types={types} value={tab} setValue={settab} />
+                <div style={{ backgroundColor: '#fff', flexDirection: 'row', display: 'flex' }}>
+                  {types.map((type, index) => (
+                    <div onClick={() => {
+                      settab(type.name);
+                    }} key={index}
+                      style={{
+                        justifyContent: 'center', alignItems: 'center',
+                        padding: '10px 20px',
+                        backgroundColor: tab === type.name ? type.color : type.color+10,
+                        cursor: 'pointer',
+                        borderRadius: 8,
+                        margin: '0px 12px 0px 0px',
+                      }}>
+                      <span style={{
+                        fontSize: 16,
+                        color: tab === type.name ? '#fff' : type.color,
+                        textTransform: 'uppercase',
+                      }}>{type.name}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div>
                 <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por data</span>
@@ -304,7 +321,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
                     width: '100%',
                   }}
                 />
-                <div onClick={searchSupplier} style={{ width: 56, height: 52, cursor: 'pointer', display: 'flex', flexDirection: 'column', backgroundColor: colors.color.primary, borderRadius: 6, justifyContent: 'center', alignItems: 'center', }}>
+                <div onClick={searchSupplier} style={{ width: 56, height: 52, cursor: 'pointer', display: 'flex', flexDirection: 'column', backgroundColor: '#20202060', borderRadius: 6, justifyContent: 'center', alignItems: 'center', }}>
                   <Search size={24} color='#fff' />
                 </div>
               </div>
@@ -334,7 +351,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
                     width: '100%',
                   }}
                 />
-                <div onClick={searchProduct} style={{ width: 56, height: 52, cursor: 'pointer', display: 'flex', flexDirection: 'column', backgroundColor: colors.color.primary, borderRadius: 6, justifyContent: 'center', alignItems: 'center', }}>
+                <div onClick={searchProduct} style={{ width: 56, height: 52, cursor: 'pointer', display: 'flex', flexDirection: 'column', backgroundColor: '#20202060', borderRadius: 6, justifyContent: 'center', alignItems: 'center', }}>
                   <Search size={24} color='#fff' />
                 </div>
               </div>
@@ -347,7 +364,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
             </div>
 
             <DrawerClose>
-              <Button onClick={handleSearch} style={{ backgroundColor: colors.color.primary, width: '100%', marginTop: 20, fontSize: 18, height: 52, }}>Pronto</Button>
+              <Button onClick={handleSearch} style={{ backgroundColor: colors.color.primary, width: '100%', marginTop: 20, fontSize: 24, height: 68, }}>Gerar agora</Button>
             </DrawerClose>
           </DrawerContent>
         </Drawer>
@@ -406,16 +423,16 @@ const ChartCard = ({ title, data, dataKey, color, maxValue }) => (
 
 const SingleCharts = ({ data, tab, line, loadingDay }) => {
   if (!line) return null;
-  
+
   const selectColor = tab === 'Saída' ? '#3590F3' : tab === 'Entrada' ? '#019866' : '#FFB238';
   return (
-    <div style={{ gap: '20px', display: 'flex', flexDirection: 'column', borderWidth: 2, borderColor: '#f1f1f1', margin: '0px 26px', borderRadius: 8, marginBottom: 20,}}>
+    <div style={{ gap: '20px', display: 'flex', flexDirection: 'column', borderWidth: 2, borderColor: '#f1f1f1', margin: '0px 26px', borderRadius: 8, marginBottom: 20, }}>
       {/* Gráfico de Linha */}
       <div style={{ backgroundColor: '#FFF', borderRadius: 8, padding: 20 }}>
         <div style={{ marginBottom: 12 }}>
           <h3 style={{ fontSize: 24, fontWeight: 'bold' }}> Gráfico de {tab}</h3>
         </div>
-        <ResponsiveContainer width="100%" height={200} style={{ marginLeft: -30 }}> 
+        <ResponsiveContainer width="100%" height={200} style={{ marginLeft: -30 }}>
           <LineChart data={line}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="label" tick={{ fill: 'gray', fontSize: 12 }} />
