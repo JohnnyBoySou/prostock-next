@@ -175,11 +175,11 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
       <div onClick={() => { setfornecedor(fornecedor === id ? '' : id) }} style={{ marginBottom: 10, }}>
         <div className='flex-row flex justify-between items-center' style={{ backgroundColor: fornecedor == id ? colors.color.blue + 10 : '#FFF', padding: 6, borderRadius: 8, borderWidth: 2, borderColor: fornecedor == id ? colors.color.blue : '#D1D1D1' }}>
           <div className='flex-col flex'>
-            <span>{nome_fantasia?.length > 32 ? nome_fantasia?.slice(0, 32) + '...' : nome_fantasia}</span>
-            <span style={{ opacity: .6, }}>{cidade} • {status} </span>
+            <span className='md:text-[18px] text-[16px] font-semibold'>{nome_fantasia?.length > 32 ? nome_fantasia?.slice(0, 32) + '...' : nome_fantasia}</span>
+            <span className='md:text-[16px] text-[12px] opacity-60 -mt-1'>{cidade} • {status} </span>
           </div>
-          <div style={{ width: 38, height: 38, backgroundColor: fornecedor == id ? colors.color.blue : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
-            <Check size={28} color='#fff' />
+          <div style={{ width: 32, height: 32, backgroundColor: fornecedor == id ? colors.color.blue : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
+            <Check size={24} color='#fff' />
           </div>
         </div>
       </div>
@@ -192,11 +192,11 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
       <div onClick={() => { setproduto(produto === id ? '' : id) }} style={{ marginBottom: 10, }}>
         <div className='flex-row flex justify-between items-center' style={{ backgroundColor: produto == id ? colors.color.blue + 10 : '#FFF', padding: 6, borderRadius: 8, borderWidth: 2, borderColor: produto == id ? colors.color.blue : '#D1D1D1' }}>
           <div className='flex-col flex'>
-            <span >{nome?.length > 32 ? nome?.slice(0, 32) + '...' : nome}</span>
-            <span style={{ opacity: .6, }}>{unidade} • {status} </span>
+            <span className='md:text-[18px] text-[16px] font-semibold'>{nome?.length > 32 ? nome?.slice(0, 32) + '...' : nome}</span>
+            <span className='md:text-[16px] text-[12px] opacity-60 -mt-1'>{unidade} • {status} </span>
           </div>
-          <div style={{ width: 38, height: 38, backgroundColor: produto == id ? colors.color.blue : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
-            <Check size={28} color='#fff' />
+          <div style={{ width: 32, height: 32, backgroundColor: produto == id ? colors.color.blue : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
+            <Check size={24} color='#fff' />
           </div>
         </div>
       </div>
