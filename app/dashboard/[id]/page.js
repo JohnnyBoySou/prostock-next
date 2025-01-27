@@ -234,7 +234,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
             <span style={{ fontSize: 18, color: '#fff' }}>Gerar gráfico</span>
           </DrawerTrigger>
           <DrawerContent className='md:py-6 md:px-12 px-6 py-4 gap-y-[14px]' >
-            <h2 className='md:text-[32px] text-[24px]' style={{  fontWeight: 600, textAlign: 'center',}}>Gerar gráfico</h2>
+            <h2 className='md:text-[32px] text-[24px] hidden md:visible' style={{  fontWeight: 600, textAlign: 'center',}}>Gerar gráfico</h2>
             <div className='flex flex-col md:flex-row md:justify-between'>
               <div style={{ flexDirection: 'column', display: 'flex', marginBottom: 6, }}>
                 <span className='md:text-[24px] text-[20px] font-semibold'>Filtrar por tipo</span>
@@ -364,7 +364,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
             </div>
 
             <DrawerClose>
-              <Button className='md:h-[68px] h-[58px] md:text-[22px] text-[18px]' onClick={handleSearch} style={{ backgroundColor: colors.color.primary, width: '100%', marginTop: 20,  }}>Gerar agora</Button>
+              <Button className='md:h-[68px] h-[58px] md:text-[22px] text-[18px]' onClick={handleSearch} style={{ backgroundColor: colors.color.primary, width: '100%', marginTop: 10,  }}>Gerar agora</Button>
             </DrawerClose>
           </DrawerContent>
         </Drawer>
