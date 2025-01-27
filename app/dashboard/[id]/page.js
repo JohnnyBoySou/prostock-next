@@ -392,7 +392,7 @@ const SingleCharts = ({ tab, line, loadingDay }) => {
       {/* Gráfico de Linha */}
       <div style={{ backgroundColor: '#FFF', borderRadius: 8, padding: 20 }}>
         <div style={{ marginBottom: 12 }}>
-          <h3 className='text-[18px] md:text-[24px] font-semibold'> Gráfico de {tab}</h3>
+          <h3 className='text-[18px] md:text-[24px] font-semibold'>Gráfico de {tab}</h3>
         </div>
         <ResponsiveContainer width="100%" height={200} style={{ marginLeft: -30 }}>
           <LineChart data={line}>
@@ -409,7 +409,7 @@ const SingleCharts = ({ tab, line, loadingDay }) => {
       {/* Tabela */}
       <div style={{ backgroundColor: '#FFF', borderRadius: 8, padding: '0px 20px 20px 20px' }}>
         <div style={{ marginBottom: 12 }}>
-          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}>Tabela</h3>
+          <h3 className='text-[18px] md:text-[24px] font-semibold'>Tabela</h3>
         </div>
         <div style={{ borderRadius: 8, overflow: 'hidden', borderWidth: 2, borderColor: '#d1d1d1', }}>
           <div style={{ display: 'flex', }}>
