@@ -2,10 +2,10 @@ import { fetchWithAuth, fetchWithNoAuth } from "./api";
 import { createToken } from "./token";
 import { selectStore } from "./store";
 
-export const loginUser = async (email: string, password: string) => {
+export const loginUser = async (email: string, password: string, session: boolean) => {
     try {
         const res: any  = await fetchWithNoAuth("/auth", { method: "POST", data: { email, password } });
-        await createToken(res.token);
+        await createToken(res.token, session);
         await selectStore(res.lojas[0] )
         return res;
     } catch (error) {

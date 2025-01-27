@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { loginUser } from '@/hooks/user'
 import { getToken } from '@/hooks/token'
+import { Checkbox } from "@/components/ui/checkbox"
 
 export default function Auth() {
   const [email, setEmail] = useState('')
@@ -13,6 +14,7 @@ export default function Auth() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const [session, setsession] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,7 +26,7 @@ export default function Auth() {
       return
     }
     try {
-      await loginUser(email, password)
+      await loginUser(email, password, session)
       router.push('/stores')
     } catch (error: any) {
       setError('E-mail ou senha incorretos.')
@@ -37,15 +39,15 @@ export default function Auth() {
     try {
       const res = await getToken();
       if (res) {
-       router.push('/stores')
+        router.push('/stores')
       }
     } catch (error) {
-      
+
     }
   }
   useEffect(() => {
     getAuth()
-  } , [])
+  }, [])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen ">
@@ -82,15 +84,29 @@ export default function Auth() {
               </div>
             </div>
           </form>
+          <div className="align-start flex space-x-2 mt-4">
+            <Checkbox onClick={() => setsession(!session)} id="terms1" />
+            <div className="grid gap-1.5 leading-none">
+              <label
+                htmlFor="terms1"
+                className="text-sm font-medium text-gray-500 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Manter conectado
+              </label>
+            </div>
+          </div>
         </CardContent>
         <CardFooter className='flex-col'>
+          
           <Button onClick={handleSubmit} disabled={isLoading} className="w-full" style={{ backgroundColor: '#019866', }}>
             {isLoading ? 'Enviando' : 'Entrar'}
           </Button>
           {error && <div className='bg-red-200  mt-2 py-2 px-4 w-max  rounded-md'><p className="text-red-500">{error}</p></div>}
-        <a className='underline text-gray-500 align-middle text-center mt-4'>Esqueci minha senha</a>
+          <a className='underline text-gray-500 align-middle text-center mt-4'>Esqueci minha senha</a>
         </CardFooter>
       </Card>
+
+
       <p className="mt-8 text-gray-500 w-[300px] text-center">
         Ao continuar, você concorda com nossos
         <a href="/privacy" className="text-gray-700 underline"> Politica de Privacidade </a>

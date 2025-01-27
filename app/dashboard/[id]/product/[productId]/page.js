@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { BarChart, LineChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import colors from '@/app/colors'
 import Tabs from '@/components/custom/tabs'
@@ -15,7 +14,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Button } from '@/components/ui/button';
-import { Check, ChevronRight, LayoutGrid, Truck, Users } from 'lucide-react'
+import { Check,} from 'lucide-react'
 //API
 import { listSupplierStore } from '@/app/api/supplier'
 import { showReportProduct, showReportProductLine } from '@/app/api/report'
@@ -54,7 +53,6 @@ export default function ProductReportPage() {
     refetch();
   }, [fornecedor, tab, dateC, dateF]);
 
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -62,7 +60,6 @@ export default function ProductReportPage() {
       </div>
     )
   }
-
   return (
     <div className="container mx-auto p-4 space-y-6">
       <Store item={data} tab={tab} settab={settab} types={types} tem={data} suppliers={suppliers} setdateC={setdateC} setdateF={setdateF} dateC={dateC} dateF={dateF} setfornecedor={setfornecedor} fornecedor={fornecedor}/>
@@ -72,7 +69,8 @@ export default function ProductReportPage() {
   )
 }
 
-const Store = ({ item, fornecedor, suppliers, setfornecedor, setdateC, setdateF, dateC, dateF,  }) => {
+const Store = ({ item, fornecedor, suppliers, setfornecedor, setdateC, setdateF, dateC, dateF, }) => {
+  if (!item) return null;
   const { nome, status, descricao, estoque_maximo, estoque_minimo, unidade } = item
   const CardSupplier = ({ item }) => {
     if (!item) return null;
@@ -151,70 +149,6 @@ const Store = ({ item, fornecedor, suppliers, setfornecedor, setdateC, setdateF,
     </div>
   )
 }
-
-const Charts = ({ data }) => {
-  const meses = data?.estatisticas
-
-  const chartData = meses.map((mes, index) => ({
-    name: mes.mes.slice(0, 3),
-    ocupacao: mes.estoque_ocupado,
-    entrada: mes.entrada,
-    saida: mes.saida,
-    perdas: mes.perdas
-  }))
-
-  return (
-    <div className="space-y-6">
-      <ChartCard
-        title="Ocupação"
-        data={chartData}
-        dataKey="ocupacao"
-        color="#FF1828"
-        maxValue={meses[0].estoque_maximo}
-      />
-      <ChartCard
-        title="Entrada"
-        data={chartData}
-        dataKey="entrada"
-        color="#019866"
-        maxValue={Math.max(...chartData.map(item => item.entrada))}
-      />
-      <ChartCard
-        title="Saída"
-        data={chartData}
-        dataKey="saida"
-        color="#3590F3"
-        maxValue={Math.max(...chartData.map(item => item.saida))}
-      />
-      <ChartCard
-        title="Perdas"
-        data={chartData}
-        dataKey="perdas"
-        color="#FFB238"
-        maxValue={Math.max(...chartData.map(item => item.perdas))}
-      />
-    </div>
-  )
-}
-
-const ChartCard = ({ title, data, dataKey, color, maxValue }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle>{title}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <ResponsiveContainer width="100%" height={200}>
-        <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis domain={[0, maxValue]} />
-          <Tooltip />
-          <Bar dataKey={dataKey} fill={color} maxBarSize={52} />
-        </BarChart>
-      </ResponsiveContainer>
-    </CardContent>
-  </Card>
-)
 
 const SingleCharts = ({ data, tab, line, loadingDay }) => {
   if (!data || !line) return null;
@@ -341,3 +275,69 @@ const SingleCharts = ({ data, tab, line, loadingDay }) => {
   );
 };
 
+/*
+
+const Charts = ({ data }) => {
+  const meses = data?.estatisticas
+
+  const chartData = meses.map((mes, index) => ({
+    name: mes.mes.slice(0, 3),
+    ocupacao: mes.estoque_ocupado,
+    entrada: mes.entrada,
+    saida: mes.saida,
+    perdas: mes.perdas
+  }))
+
+  return (
+    <div className="space-y-6">
+      <ChartCard
+        title="Ocupação"
+        data={chartData}
+        dataKey="ocupacao"
+        color="#FF1828"
+        maxValue={meses[0].estoque_maximo}
+      />
+      <ChartCard
+        title="Entrada"
+        data={chartData}
+        dataKey="entrada"
+        color="#019866"
+        maxValue={Math.max(...chartData.map(item => item.entrada))}
+      />
+      <ChartCard
+        title="Saída"
+        data={chartData}
+        dataKey="saida"
+        color="#3590F3"
+        maxValue={Math.max(...chartData.map(item => item.saida))}
+      />
+      <ChartCard
+        title="Perdas"
+        data={chartData}
+        dataKey="perdas"
+        color="#FFB238"
+        maxValue={Math.max(...chartData.map(item => item.perdas))}
+      />
+    </div>
+  )
+}
+
+const ChartCard = ({ title, data, dataKey, color, maxValue }) => (
+  <Card>
+    <CardHeader>
+      <CardTitle>{title}</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis domain={[0, maxValue]} />
+          <Tooltip />
+          <Bar dataKey={dataKey} fill={color} maxBarSize={52} />
+        </BarChart>
+      </ResponsiveContainer>
+    </CardContent>
+  </Card>
+)
+*/

@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { ChevronRight, LogOut, Store } from 'lucide-react';
+import { deleteToken, verifyAuth } from '@/hooks/token';
+import { excludeStore } from '@/hooks/store';
 
 export default function DashLayout({children}) {
   const router = useRouter()
@@ -13,11 +15,25 @@ export default function DashLayout({children}) {
     try {
       deleteToken();
       excludeStore();
-      router.push('/')
+      router.replace('/')
     } catch (error) {
       console.log(error);
     }
   }
+
+
+  
+  useEffect(() => {
+    const verify = async () => {
+      const res = await verifyAuth();
+      if (!res) {
+        router.replace('/')
+      } else {
+        return;
+      }
+    }
+    verify();
+  }, []);
 
   const [store, setstore] = useState();
   const [loading, setloading] = useState();
@@ -64,7 +80,6 @@ export default function DashLayout({children}) {
         </div>
       </nav>
       <div style={{ paddingTop: 80, }}>
-
       {children}
       </div>
     </div>

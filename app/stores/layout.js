@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { ChevronRight, LogOut, Store } from 'lucide-react';
-import { deleteToken } from '@/hooks/token';
+import { deleteToken, verifyAuth } from '@/hooks/token';
 import { excludeStore } from '@/hooks/store';
 
 export default function StoresLayout({
@@ -20,8 +20,21 @@ export default function StoresLayout({
       excludeStore();
       router.replace('/')
     } catch (error) {
+      console.log(error)
     }
   }
+
+  useEffect(() => {
+    const verify = async () => {
+      const res = await verifyAuth();
+      if (!res) {
+        router.replace('/')
+      } else {
+        return;
+      }
+    }
+    verify();
+  }, []);
 
   const [store, setstore] = useState();
   const [loading, setloading] = useState();

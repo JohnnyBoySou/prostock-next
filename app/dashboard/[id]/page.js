@@ -2,17 +2,14 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
-import { BarChart, LineChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from 'recharts'
+import { BarChart, LineChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 import { Check, ChevronRight, LayoutGrid, Search, Truck, Users } from 'lucide-react'
-import { showReportStore, showReportProductLine, listReportProduct } from '@/app/api/report'
-import Link from 'next/link'
+import { showReportStore, showReportProductLine,  } from '@/app/api/report'
 import colors from '@/app/colors'
 import { Button } from '@/components/ui/button';
-
-import Tabs from '@/components/custom/tabs'
 
 import {
   Drawer,
@@ -27,7 +24,7 @@ import { listProductStoreSearch } from '@/app/api/product'
 export default function DashboardPage() {
   const params = useParams()
   const id = params.id
-  const dateNow = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+  const dateNow = new Date().toISOString().split('T')[0]; 
 
   const [dateC, setdateC] = useState('2025-01-01');
   const [dateF, setdateF] = useState(dateNow);
@@ -90,12 +87,12 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="space-y-6">
       <Store item={store} types={types} tab={tab} settab={settab} setdateC={setdateC} setdateF={setdateF} handleSearch={handleSearch} dateC={dateC} dateF={dateF}
         setfornecedor={setfornecedor} fornecedor={fornecedor}
         setproduto={setproduto} produto={produto}
       />
-      {line ? <SingleCharts data={store} tab={tab} line={line} loadingDay={loadingDay} /> :
+      {line ? <SingleCharts tab={tab} line={line} loadingDay={loadingDay} /> :
         <PlaceChart entradas={entradas} saidas={saidas} perdas={perdas} />}
     </div>
   )
@@ -168,20 +165,20 @@ const PlaceChart = ({ entradas, saidas, perdas }) => {
   );
 };
 
-
 const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto, produto, setdateC, setdateF, dateC, dateF, handleSearch }) => {
+  if (!item) return null;
   const { nome, status, cidade, estado, cnpj, funcionarios, produtos, fornecedores, id } = item
   const CardSupplier = ({ item }) => {
     if (!item) return null;
     const { id, status, cidade, id_loja, nome_fantasia, } = item;
     return (
       <div onClick={() => { setfornecedor(fornecedor === id ? '' : id) }} style={{ marginBottom: 10, }}>
-        <div pv={20} className='flex-row flex justify-between items-center' style={{ backgroundColor: fornecedor == id ? colors.color.blue + 10 : '#FFF', padding: 8, borderRadius: 8, borderWidth: 2, borderColor: fornecedor == id ? colors.color.blue : '#D1D1D1' }}>
-          <div gv={6} className='flex-col flex'>
-            <span size={20} fontFamily='Font_Medium'>{nome_fantasia?.length > 32 ? nome_fantasia?.slice(0, 32) + '...' : nome_fantasia}</span>
+        <div className='flex-row flex justify-between items-center' style={{ backgroundColor: fornecedor == id ? colors.color.blue + 10 : '#FFF', padding: 6, borderRadius: 8, borderWidth: 2, borderColor: fornecedor == id ? colors.color.blue : '#D1D1D1' }}>
+          <div className='flex-col flex'>
+            <span>{nome_fantasia?.length > 32 ? nome_fantasia?.slice(0, 32) + '...' : nome_fantasia}</span>
             <span style={{ opacity: .6, }}>{cidade} • {status} </span>
           </div>
-          <div style={{ width: 46, height: 46, backgroundColor: fornecedor == id ? colors.color.blue : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
+          <div style={{ width: 38, height: 38, backgroundColor: fornecedor == id ? colors.color.blue : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
             <Check size={28} color='#fff' />
           </div>
         </div>
@@ -193,12 +190,12 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
     const { id, status, descricao, nome, unidade } = item;
     return (
       <div onClick={() => { setproduto(produto === id ? '' : id) }} style={{ marginBottom: 10, }}>
-        <div className='flex-row flex justify-between items-center' style={{ backgroundColor: produto == id ? colors.color.blue + 10 : '#FFF', padding: 8, borderRadius: 8, borderWidth: 2, borderColor: produto == id ? colors.color.blue : '#D1D1D1' }}>
+        <div className='flex-row flex justify-between items-center' style={{ backgroundColor: produto == id ? colors.color.blue + 10 : '#FFF', padding: 6, borderRadius: 8, borderWidth: 2, borderColor: produto == id ? colors.color.blue : '#D1D1D1' }}>
           <div className='flex-col flex'>
             <span >{nome?.length > 32 ? nome?.slice(0, 32) + '...' : nome}</span>
             <span style={{ opacity: .6, }}>{unidade} • {status} </span>
           </div>
-          <div style={{ width: 46, height: 46, backgroundColor: produto == id ? colors.color.blue : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
+          <div style={{ width: 38, height: 38, backgroundColor: produto == id ? colors.color.blue : '#fff', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', borderRadius: 6, }}>
             <Check size={28} color='#fff' />
           </div>
         </div>
@@ -236,12 +233,12 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
           <DrawerTrigger style={{ alignItems: 'center', alignSelf: 'center', height: 56, borderRadius: 8, backgroundColor: colors.color.primary, justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20, }}>
             <span style={{ fontSize: 18, color: '#fff' }}>Gerar gráfico</span>
           </DrawerTrigger>
-          <DrawerContent className='py-6 px-12' >
+          <DrawerContent className='md:py-6 md:px-12 px-6 py-4' >
             <h2 style={{ fontSize: 32, fontWeight: 600, textAlign: 'center', margin: '0px 0px 10px 0px', }}>Gerar gráfico</h2>
-            <div style={{ flexDirection: 'row', display: 'flex', justifyContent: 'space-between' }}>
-              <div style={{ flexDirection: 'column', display: 'flex' }}>
+            <div className='flex flex-col md:flex-row md:justify-between'>
+              <div style={{ flexDirection: 'column', display: 'flex', marginBottom: 6, }}>
                 <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por tipo</span>
-                <span style={{ fontSize: 16, opacity: .6, marginBottom: 6, }}>Selecione apenas um por vez</span>
+                <span style={{ fontSize: 16, opacity: .6, marginBottom: 6, marginTop: -8, }}>Selecione apenas um por vez</span>
                 <div style={{ backgroundColor: '#fff', flexDirection: 'row', display: 'flex' }}>
                   {types.map((type, index) => (
                     <div onClick={() => {
@@ -265,8 +262,8 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
                 </div>
               </div>
               <div>
-                <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por data</span>
-                <div style={{ display: 'flex', flexDirection: 'row', gap: 16 }}>
+                <span style={{ fontSize: 24, fontWeight: 500,  }}>Filtrar por data</span>
+                <div style={{ display: 'flex', flexDirection: 'row', gap: 16, marginTop: -8 }}>
                   <div>
                     <label htmlFor="dateC" style={{ display: 'block', marginBottom: 8, opacity: .6, }}>Data de início:</label>
                     <input
@@ -305,7 +302,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
 
             <div style={{ marginTop: 10, }}>
               <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por fornecedor</span>
-              <div style={{ display: 'flex', flexDirection: 'row', gap: 12, marginTop: 12, marginBottom: 12, }}>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: 12, marginTop: 6, marginBottom: 12, }}>
                 <input
                   type="search"
                   id="fornecedorName"
@@ -325,7 +322,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
                   <Search size={24} color='#fff' />
                 </div>
               </div>
-              <ScrollArea className='h-[160px] ' style={{ marginTop: 16, }}>
+              <ScrollArea className='md:h-[160px] h-[146px]' style={{ marginTop: 16, }}>
                 {suppliers?.slice(0, 10)?.map((item) => (
                   <CardSupplier key={item.id} item={item} />
                 ))}
@@ -333,9 +330,9 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
               </ScrollArea>
             </div>
 
-            <div style={{}}>
+            <div>
               <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por produto</span>
-              <div style={{ display: 'flex', flexDirection: 'row', gap: 12, marginTop: 12, marginBottom: 12, }}>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: 12, marginTop: 6, marginBottom: 12, }}>
                 <input
                   type="search"
                   id="productName"
@@ -355,7 +352,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
                   <Search size={24} color='#fff' />
                 </div>
               </div>
-              <ScrollArea className='h-[230px]'>
+              <ScrollArea className='md:h-[230px] h-[146px]'>
                 {products?.slice(0, 10)?.map((item) => (
                   <CardProduct key={item.id} item={item} />
                 ))}
@@ -364,7 +361,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
             </div>
 
             <DrawerClose>
-              <Button onClick={handleSearch} style={{ backgroundColor: colors.color.primary, width: '100%', marginTop: 20, fontSize: 24, height: 68, }}>Gerar agora</Button>
+              <Button className='md:h-[68px] h-[58px] md:text-[22px] text-[18px]' onClick={handleSearch} style={{ backgroundColor: colors.color.primary, width: '100%', marginTop: 20,  }}>Gerar agora</Button>
             </DrawerClose>
           </DrawerContent>
         </Drawer>
@@ -383,45 +380,7 @@ const StoreInfoCard = ({ title, value, color, icon }) => (
   </div>
 )
 
-const Charts = ({ data }) => {
-  const meses = data.meses
-
-  const chartData = [
-    { name: meses[0].mes.slice(0, 3), ocupacao: meses[0].estoque_ocupado, entrada: meses[0].entrada, saida: meses[0].saida, perdas: meses[0].perdas },
-    { name: meses[1].mes.slice(0, 3), ocupacao: meses[1].estoque_ocupado, entrada: meses[1].entrada, saida: meses[1].saida, perdas: meses[1].perdas },
-    { name: meses[2].mes.slice(0, 3), ocupacao: meses[2].estoque_ocupado, entrada: meses[2].entrada, saida: meses[2].saida, perdas: meses[2].perdas },
-  ]
-
-  return (
-    <div className="space-y-2">
-      <ChartCard title="Ocupação" data={chartData} dataKey="ocupacao" color="#FF1828" maxValue={meses[0].estoque_maximo} />
-      <ChartCard title="Entrada" data={chartData} dataKey="entrada" color="#019866" />
-      <ChartCard title="Saída" data={chartData} dataKey="saida" color="#3590F3" />
-      <ChartCard title="Perdas" data={chartData} dataKey="perdas" color="#FFB238" />
-    </div>
-  )
-}
-
-const ChartCard = ({ title, data, dataKey, color, maxValue }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle>{title}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <ResponsiveContainer width="100%" height={200}>
-        <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey={dataKey} fill={color} maxBarSize={52} />
-        </BarChart>
-      </ResponsiveContainer>
-    </CardContent>
-  </Card>
-)
-
-const SingleCharts = ({ data, tab, line, loadingDay }) => {
+const SingleCharts = ({ tab, line, loadingDay }) => {
   if (!line) return null;
 
   const selectColor = tab === 'Saída' ? '#3590F3' : tab === 'Entrada' ? '#019866' : '#FFB238';
@@ -473,21 +432,7 @@ const SingleCharts = ({ data, tab, line, loadingDay }) => {
   );
 };
 
-const Items = ({ data, storeId }) => {
-  if (!data || data.length === 0) {
-    return <div className="text-center py-8">Nenhum produto encontrado.</div>
-  }
-  return (
-    <div className='px-6'>
-      <h2 className="text-2xl font-bold mb-4">Produtos</h2>
-      <div className="space-y-4">
-        {data.map((item) => (
-          <ProductCard key={item.id} item={item} storeId={storeId} />
-        ))}
-      </div>
-    </div>
-  )
-}
+/*
 
 const ProductCard = ({ item, storeId }) => {
   const { nome, status, unidade, id,
@@ -537,4 +482,55 @@ const ProductCard = ({ item, storeId }) => {
   )
 }
 
+const Items = ({ data, storeId }) => {
+  if (!data || data.length === 0) {
+    return <div className="text-center py-8">Nenhum produto encontrado.</div>
+  }
+  return (
+    <div className='px-6'>
+      <h2 className="text-2xl font-bold mb-4">Produtos</h2>
+      <div className="space-y-4">
+        {data.map((item) => (
+          <ProductCard key={item.id} item={item} storeId={storeId} />
+        ))}
+      </div>
+    </div>
+  )
+}
+const Charts = ({ data }) => {
+  const meses = data.meses
 
+  const chartData = [
+    { name: meses[0].mes.slice(0, 3), ocupacao: meses[0].estoque_ocupado, entrada: meses[0].entrada, saida: meses[0].saida, perdas: meses[0].perdas },
+    { name: meses[1].mes.slice(0, 3), ocupacao: meses[1].estoque_ocupado, entrada: meses[1].entrada, saida: meses[1].saida, perdas: meses[1].perdas },
+    { name: meses[2].mes.slice(0, 3), ocupacao: meses[2].estoque_ocupado, entrada: meses[2].entrada, saida: meses[2].saida, perdas: meses[2].perdas },
+  ]
+
+  return (
+    <div className="space-y-2">
+      <ChartCard title="Ocupação" data={chartData} dataKey="ocupacao" color="#FF1828" maxValue={meses[0].estoque_maximo} />
+      <ChartCard title="Entrada" data={chartData} dataKey="entrada" color="#019866" />
+      <ChartCard title="Saída" data={chartData} dataKey="saida" color="#3590F3" />
+      <ChartCard title="Perdas" data={chartData} dataKey="perdas" color="#FFB238" />
+    </div>
+  )
+}
+const ChartCard = ({ title, data, dataKey, color, maxValue }) => (
+  <Card>
+    <CardHeader>
+      <CardTitle>{title}</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Bar dataKey={dataKey} fill={color} maxBarSize={52} />
+        </BarChart>
+      </ResponsiveContainer>
+    </CardContent>
+  </Card>
+)
+*/

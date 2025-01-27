@@ -25,7 +25,7 @@
         "**/public": true,
         "**/app/favicon.ico": false,
         "**/app/globals.css": true,
-        "**/app/font.css": true,
+        "**/app/font.css": false,
         "**/app/layout.tsx": false,
         "**/app/page.js": true,
     }
