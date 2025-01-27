@@ -104,12 +104,12 @@ const PlaceChart = ({ entradas, saidas, perdas }) => {
   return (
     <div style={{ gap: '20px', display: 'flex', paddingBottom: 20, marginBottom: 50, flexDirection: 'column', borderWidth: 2, borderColor: '#f1f1f1', margin: '0px 26px', borderRadius: 8, }}>
       <div style={{ marginBottom: 12 }}>
-        <h3 style={{ fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: -20, marginTop: 20, }}>Resumo dos últimos 30 dias</h3>
+        <h3 className='text-[20px] md:text-[24px] font-bold text-center' style={{ marginBottom: -20, marginTop: 20, }}>Resumo dos últimos 30 dias</h3>
       </div>
-      <div style={{ borderRadius: 8, padding: 20 }}>
+      <div  className='px-4'>
         <div style={{ marginBottom: 12 }}>
-          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}>Saída de produtos</h3>
-          <p style={{ opacity: .6 }}>Últimos 30 dias</p>
+          <h3 className='text-[18px] md:text-[20px] font-semibold'>Saída de produtos</h3>
+          <p className='text-[14px] md:text-[18px] opacity-60'>Últimos 30 dias</p>
         </div>
 
         <ResponsiveContainer width="100%" height={200}>
@@ -127,8 +127,8 @@ const PlaceChart = ({ entradas, saidas, perdas }) => {
 
       <div style={{ borderRadius: 8, padding: 20 }}>
         <div style={{ marginBottom: 12 }}>
-          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}>Entrada de produtos</h3>
-          <p style={{ opacity: .6 }}>Últimos 30 dias</p>
+          <h3 className='text-[18px] md:text-[20px] font-semibold'>Entrada de produtos</h3>
+          <p  className='text-[14px] md:text-[18px] opacity-60'>Últimos 30 dias</p>
         </div>
 
         <ResponsiveContainer width="100%" height={200}>
@@ -146,8 +146,8 @@ const PlaceChart = ({ entradas, saidas, perdas }) => {
 
       <div style={{ borderRadius: 8, padding: 20 }}>
         <div style={{ marginBottom: 12 }}>
-          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}>Perdas de produtos</h3>
-          <p style={{ opacity: .6 }}>Últimos 30 dias</p>
+          <h3 className='text-[18px] md:text-[20px] font-semibold'>Perdas de produtos</h3>
+          <p className='text-[14px] md:text-[18px] opacity-60'>Últimos 30 dias</p>
         </div>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={perdas}>
@@ -233,8 +233,8 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
           <DrawerTrigger style={{ alignItems: 'center', alignSelf: 'center', height: 56, borderRadius: 8, backgroundColor: colors.color.primary, justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20, }}>
             <span style={{ fontSize: 18, color: '#fff' }}>Gerar gráfico</span>
           </DrawerTrigger>
-          <DrawerContent className='md:py-6 md:px-12 px-6 py-4' >
-            <h2 className='md:text-[32px] text-[24px]' style={{  fontWeight: 600, textAlign: 'center', margin: '0px 0px 10px 0px', }}>Gerar gráfico</h2>
+          <DrawerContent className='md:py-6 md:px-12 px-6 py-4 gap-y-[14px]' >
+            <h2 className='md:text-[32px] text-[24px]' style={{  fontWeight: 600, textAlign: 'center',}}>Gerar gráfico</h2>
             <div className='flex flex-col md:flex-row md:justify-between'>
               <div style={{ flexDirection: 'column', display: 'flex', marginBottom: 6, }}>
                 <span className='md:text-[24px] text-[20px] font-semibold'>Filtrar por tipo</span>
@@ -299,7 +299,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
               </div>
             </div>
 
-            <div style={{ marginTop: 10, }}>
+            <div >
               <span className='md:text-[24px] text-[20px] font-semibold'>Filtrar por fornecedor</span>
               <div style={{ display: 'flex', flexDirection: 'row', gap: 12, marginTop: 6, marginBottom: 12, }}>
                 <input
@@ -310,18 +310,20 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
                   onChange={(e) => setfornecedorName(e.target.value)}
                   placeholder='Ex: Nova Era Ltda'
                   onKeyDown={(e) => { if (e.key === 'Enter') searchSupplier() }}
+                  className='md:p-4 p-2'
                   style={{
-                    padding: 8,
                     borderRadius: 6,
                     border: '2px solid #ccc',
                     width: '100%',
                   }}
                 />
-                <div onClick={searchSupplier} style={{ width: 56, height: 52, cursor: 'pointer', display: 'flex', flexDirection: 'column', backgroundColor: '#20202060', borderRadius: 6, justifyContent: 'center', alignItems: 'center', }}>
-                  <Search size={24} color='#fff' />
+                <div onClick={searchSupplier}
+                  className='md:w-[58px] md:h-[58px] w-[46px] h-[42px]'
+                  style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', backgroundColor: '#20202060', borderRadius: 6, justifyContent: 'center', alignItems: 'center', }}>
+                  <Search size={20} color='#fff' />
                 </div>
               </div>
-              <ScrollArea className='md:h-[160px] h-[146px]' style={{ marginTop: 16, }}>
+              <ScrollArea className='md:h-[160px] h-[120px]' style={{ marginTop: 16, }}>
                 {suppliers?.slice(0, 10)?.map((item) => (
                   <CardSupplier key={item.id} item={item} />
                 ))}
@@ -329,7 +331,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
               </ScrollArea>
             </div>
 
-            <div>
+            <div >
               <span className='md:text-[24px] text-[20px] font-semibold'>Filtrar por produto</span>
               <div style={{ display: 'flex', flexDirection: 'row', gap: 12, marginTop: 6, marginBottom: 12, }}>
                 <input
@@ -340,18 +342,20 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
                   onChange={(e) => setproductName(e.target.value)}
                   placeholder='Ex: Uva'
                   onKeyDown={(e) => { if (e.key === 'Enter') searchProduct() }}
+                  className='md:p-4 p-2'
                   style={{
-                    padding: 8,
                     borderRadius: 6,
                     border: '2px solid #ccc',
                     width: '100%',
                   }}
                 />
-                <div onClick={searchProduct} style={{ width: 56, height: 52, cursor: 'pointer', display: 'flex', flexDirection: 'column', backgroundColor: '#20202060', borderRadius: 6, justifyContent: 'center', alignItems: 'center', }}>
-                  <Search size={24} color='#fff' />
+                <div onClick={searchProduct}
+                  className='md:w-[58px] md:h-[58px] w-[46px] h-[42px]'
+                  style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', backgroundColor: '#20202060', borderRadius: 6, justifyContent: 'center', alignItems: 'center', }}>
+                  <Search size={20} color='#fff' />
                 </div>
               </div>
-              <ScrollArea className='md:h-[230px] h-[146px]'>
+              <ScrollArea className='md:h-[210px] h-[120px]'>
                 {products?.slice(0, 10)?.map((item) => (
                   <CardProduct key={item.id} item={item} />
                 ))}
@@ -388,7 +392,7 @@ const SingleCharts = ({ tab, line, loadingDay }) => {
       {/* Gráfico de Linha */}
       <div style={{ backgroundColor: '#FFF', borderRadius: 8, padding: 20 }}>
         <div style={{ marginBottom: 12 }}>
-          <h3 style={{ fontSize: 24, fontWeight: 'bold' }}> Gráfico de {tab}</h3>
+          <h3 className='text-[18px] md:text-[24px] font-semibold'> Gráfico de {tab}</h3>
         </div>
         <ResponsiveContainer width="100%" height={200} style={{ marginLeft: -30 }}>
           <LineChart data={line}>
