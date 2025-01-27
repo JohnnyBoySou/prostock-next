@@ -234,12 +234,11 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
             <span style={{ fontSize: 18, color: '#fff' }}>Gerar gráfico</span>
           </DrawerTrigger>
           <DrawerContent className='md:py-6 md:px-12 px-6 py-4' >
-            <h2 style={{ fontSize: 32, fontWeight: 600, textAlign: 'center', margin: '0px 0px 10px 0px', }}>Gerar gráfico</h2>
+            <h2 className='md:text-[32px] text-[24px]' style={{  fontWeight: 600, textAlign: 'center', margin: '0px 0px 10px 0px', }}>Gerar gráfico</h2>
             <div className='flex flex-col md:flex-row md:justify-between'>
               <div style={{ flexDirection: 'column', display: 'flex', marginBottom: 6, }}>
-                <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por tipo</span>
-                <span style={{ fontSize: 16, opacity: .6, marginBottom: 6, marginTop: -8, }}>Selecione apenas um por vez</span>
-                <div style={{ backgroundColor: '#fff', flexDirection: 'row', display: 'flex' }}>
+                <span className='md:text-[24px] text-[20px] font-semibold'>Filtrar por tipo</span>
+                <div style={{ backgroundColor: '#fff', flexDirection: 'row', display: 'flex', marginTop: 6, }}>
                   {types.map((type, index) => (
                     <div onClick={() => {
                       settab(type.name);
@@ -262,7 +261,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
                 </div>
               </div>
               <div>
-                <span style={{ fontSize: 24, fontWeight: 500,  }}>Filtrar por data</span>
+                <span className='md:text-[24px] text-[20px] font-semibold'>Filtrar por data</span>
                 <div style={{ display: 'flex', flexDirection: 'row', gap: 16, marginTop: -8 }}>
                   <div>
                     <label htmlFor="dateC" style={{ display: 'block', marginBottom: 8, opacity: .6, }}>Data de início:</label>
@@ -301,7 +300,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
             </div>
 
             <div style={{ marginTop: 10, }}>
-              <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por fornecedor</span>
+              <span className='md:text-[24px] text-[20px] font-semibold'>Filtrar por fornecedor</span>
               <div style={{ display: 'flex', flexDirection: 'row', gap: 12, marginTop: 6, marginBottom: 12, }}>
                 <input
                   type="search"
@@ -331,7 +330,7 @@ const Store = ({ item, fornecedor, tab, settab, types, setfornecedor, setproduto
             </div>
 
             <div>
-              <span style={{ fontSize: 24, fontWeight: 500, }}>Filtrar por produto</span>
+              <span className='md:text-[24px] text-[20px] font-semibold'>Filtrar por produto</span>
               <div style={{ display: 'flex', flexDirection: 'row', gap: 12, marginTop: 6, marginBottom: 12, }}>
                 <input
                   type="search"
