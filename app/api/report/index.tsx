@@ -84,8 +84,6 @@ export const showReportSupplier = async (id: number, lojaid: number) => {
 }
 
 export const showReportProductLine = async (produto_id: number, lojaid: number, fornecedor_id: number | null = null, datac: string | null = null, dataf: string | null = null, tab: string) => {
-   // const c = formatDateForLaravel(datac); 
-   // const f = formatDateForLaravel(dataf);
     const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : 'entrada'
     try {
         const res: any = await fetchWithAuthOtherStore("/usuarios/estatisticas/linechat", {
@@ -100,9 +98,31 @@ export const showReportProductLine = async (produto_id: number, lojaid: number, 
             },
         });
         const lineData = res?.data?.map((item: any) => { return { value: parseInt(item?.value), label: item?.label } });
-        return lineData;
+        return {lineData, token: res?.token};
     } catch (error: any) {
         console.log(error.request)
         throw new Error(error.message);
     }
 }
+
+export const showReportExcel= async (produto_id: number, lojaid: string, fornecedor_id: number | null = null, datac: string | null = null, dataf: string | null = null, tab: string, ) => {
+    const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : 'entrada'
+    try {
+        const res: any = await fetchWithAuthOtherStore("/usuarios/estatisticas/linechat", {
+            method: "GET",
+            headers: { "lojaid": lojaid.toString() },
+            params: {
+                "fornecedor_id": fornecedor_id,
+                "produto_id": produto_id,
+                "datac": datac,
+                "dataf":dataf,
+                "tipo": type,
+            },
+        });
+        const token = res.token;
+        window.open(`https://stock.engenhariadigital.net/api/usuarios/gerarexel?fornecedor_id=${fornecedor_id}&produto_id=${produto_id}&datac=${datac}&dataf=${dataf}&tipo=${type}&lojaid=${lojaid}&token=${token}`, '_blank');
+    } catch (error) {
+        console.log(error)        
+    }
+ }
+ 

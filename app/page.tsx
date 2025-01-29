@@ -102,7 +102,6 @@ export default function Auth() {
             {isLoading ? 'Enviando' : 'Entrar'}
           </Button>
           {error && <div className='bg-red-200  mt-2 py-2 px-4 w-max  rounded-md'><p className="text-red-500">{error}</p></div>}
-          <a className='underline text-gray-500 align-middle text-center mt-4'>Esqueci minha senha</a>
         </CardFooter>
       </Card>
 
