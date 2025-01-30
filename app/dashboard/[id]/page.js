@@ -29,11 +29,11 @@ export default function DashboardPage() {
   const [dateC, setdateC] = useState('2025-01-01');
   const [dateF, setdateF] = useState(dateNow);
 
-  const [fornecedor, setfornecedor] = useState();
-  const [produto, setproduto] = useState();
+  const [fornecedor, setfornecedor] = useState('');
+  const [produto, setproduto] = useState('');
 
   const [tab, settab] = useState('Saída');
-  const types = [{ name: 'Saída', color: '#3590F3' }, { name: 'Entrada', color: '#019866' }, { name: 'Perdas', color: '#FFB238' }];
+  const types = [{ name: 'Saída', color: '#3590F3' }, { name: 'Entrada', color: '#019866' }, { name: 'Perdas', color: '#FFB238' }, {name: 'Todos', color: '#EA1E2C'}];
 
   const { data: store, isLoading, } = useQuery({
     queryKey: ["stores report single", id],
@@ -89,6 +89,7 @@ export default function DashboardPage() {
     }
   });
 
+  console.log(entradas, saidas, perdas);
 
 
 
@@ -109,7 +110,7 @@ export default function DashboardPage() {
         setproduto={setproduto} produto={produto}
       />
       {line ? <SingleCharts tab={tab} line={line?.lineData} loadingDay={loadingDay} /> :
-        <PlaceChart entradas={entradas} saidas={saidas} perdas={perdas} />}
+        <PlaceChart entradas={entradas?.lineData} saidas={saidas?.lineData} perdas={perdas?.lineData} />}
     </div>
   )
 }

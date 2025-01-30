@@ -83,15 +83,17 @@ export const showReportSupplier = async (id: number, lojaid: number) => {
     }
 }
 
-export const showReportProductLine = async (produto_id: number, lojaid: number, fornecedor_id: number | null = null, datac: string | null = null, dataf: string | null = null, tab: string) => {
-    const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : 'entrada'
+export const showReportProductLine = async (produto_id: string, lojaid: number, fornecedor_id: string | null = null, datac: string | null = null, dataf: string | null = null, tab: string) => {
+    const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : tab == 'Todos' ? 'todos' : 'entrada'
+    console.log(fornecedor_id)
+    console.log(produto_id)
     try {
         const res: any = await fetchWithAuthOtherStore("/usuarios/estatisticas/linechat", {
             method: "GET",
             headers: { "lojaid": lojaid.toString() },
             params: {
-                "fornecedor_id": fornecedor_id,
-                "produto_id": produto_id,
+                "fornecedor_id": fornecedor_id ? fornecedor_id : '',
+                "produto_id": produto_id ? produto_id : '', 
                 "datac": datac,
                 "dataf":dataf,
                 "tipo": type,
@@ -105,15 +107,15 @@ export const showReportProductLine = async (produto_id: number, lojaid: number, 
     }
 }
 
-export const showReportExcel= async (produto_id: number, lojaid: string, fornecedor_id: number | null = null, datac: string | null = null, dataf: string | null = null, tab: string, ) => {
-    const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : 'entrada'
+export const showReportExcel= async (produto_id: string, lojaid: string, fornecedor_id: string, datac: string | null = null, dataf: string | null = null, tab: string, ) => {
+    const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : tab == 'Todos' ? 'todos' : 'entrada'
     try {
         const res: any = await fetchWithAuthOtherStore("/usuarios/estatisticas/linechat", {
             method: "GET",
             headers: { "lojaid": lojaid.toString() },
             params: {
-                "fornecedor_id": fornecedor_id,
-                "produto_id": produto_id,
+                "fornecedor_id": fornecedor_id ? fornecedor_id : '',
+                "produto_id": produto_id ? produto_id : '', 
                 "datac": datac,
                 "dataf":dataf,
                 "tipo": type,
