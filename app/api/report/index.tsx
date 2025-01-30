@@ -85,8 +85,6 @@ export const showReportSupplier = async (id: number, lojaid: number) => {
 
 export const showReportProductLine = async (produto_id: string, lojaid: number, fornecedor_id: string | null = null, datac: string | null = null, dataf: string | null = null, tab: string) => {
     const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : tab == 'Todos' ? '' : 'entrada'
-    console.log(fornecedor_id)
-    console.log(produto_id)
     try {
         const res: any = await fetchWithAuthOtherStore("/usuarios/estatisticas/linechat", {
             method: "GET",
