@@ -84,7 +84,7 @@ export const showReportSupplier = async (id: number, lojaid: number) => {
 }
 
 export const showReportProductLine = async (produto_id: string, lojaid: number, fornecedor_id: string | null = null, datac: string | null = null, dataf: string | null = null, tab: string) => {
-    const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : tab == 'Todos' ? 'todos' : 'entrada'
+    const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : tab == 'Todos' ? '' : 'entrada'
     console.log(fornecedor_id)
     console.log(produto_id)
     try {
@@ -102,13 +102,12 @@ export const showReportProductLine = async (produto_id: string, lojaid: number, 
         const lineData = res?.data?.map((item: any) => { return { value: parseInt(item?.value), label: item?.label } });
         return {lineData, token: res?.token};
     } catch (error: any) {
-        console.log(error.request)
         throw new Error(error.message);
     }
 }
 
 export const showReportExcel= async (produto_id: string, lojaid: string, fornecedor_id: string, datac: string | null = null, dataf: string | null = null, tab: string, ) => {
-    const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : tab == 'Todos' ? 'todos' : 'entrada'
+    const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : tab == 'Todos' ? '' : 'entrada'
     try {
         const res: any = await fetchWithAuthOtherStore("/usuarios/estatisticas/linechat", {
             method: "GET",
