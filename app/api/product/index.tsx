@@ -27,9 +27,9 @@ export const searchProduct = async (name: string) => {
     }
 }
 
-export const importProduct = async (data: any) => {
+export const importProduct = async (id: number, data: any) => {
     try {
-        const res = await fetchWithAuth("/usuarios/upload/produtos", { method: "POST", data: {"csv": data} });
+        const res = await fetchWithAuthOtherStore("/usuarios/upload/produtos", { method: "POST", data: {"csv": data}, headers: { "lojaid": id.toString() } });
         return res;
     } catch (error: any) {
         throw new Error(error.message);

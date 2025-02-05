@@ -4,7 +4,7 @@ import { importProduct } from "../api/product";
 import { importSupplier } from "../api/supplier";
 import { Button } from "../../components/ui/button";
 
-export default function ImportPage() {
+export default function ImportData(store) {
 
     const [success, setsuccess] = useState();
     const [error, seterror] = useState();
@@ -24,10 +24,10 @@ export default function ImportPage() {
                 const base64 = e.target.result.split(',')[1];
                 try {
                     if (type === 'PRODUTO') {
-                        await importProduct(base64);
+                        await importProduct(store, base64);
                         setsuccess('Arquivo importado com sucesso!');
                     } else {
-                        await importSupplier(base64);
+                        await importSupplier(store, base64);
                         setsuccess('Arquivo importado com sucesso!');
                     }
                 } catch (error) {

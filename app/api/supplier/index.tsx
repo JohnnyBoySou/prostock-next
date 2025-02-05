@@ -38,9 +38,9 @@ export const searchSupplier = async (name: string) => {
         throw new Error(error.message);
     }
 }
-export const importSupplier = async (data: any) => {
+export const importSupplier = async (id: number, data: any) => {
     try {
-        const res = await fetchWithAuth("/usuarios/upload/fornecedores", { method: "POST", data: {"csv": data} });
+        const res = await fetchWithAuthOtherStore("/usuarios/upload/fornecedores", { method: "POST", data: {"csv": data}, headers: { "lojaid": id.toString() } });
         return res;
     } catch (error: any) {
         throw new Error(error.message);

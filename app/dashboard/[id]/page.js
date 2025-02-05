@@ -20,6 +20,7 @@ import {
 
 import { listSupplierStoreSearch } from '@/app/api/supplier'
 import { listProductStoreSearch } from '@/app/api/product'
+import ImportData from '../../importar/page'
 
 export default function DashboardPage() {
   const params = useParams()
@@ -407,9 +408,19 @@ const Store = ({ item, fornecedor, tab, settab,  types, setfornecedor, setprodut
               </DrawerClose>
             </DrawerContent>
           </Drawer>
-            <Button onClick={handleExcel} style={{ alignItems: 'center', alignSelf: 'center', height: 56, borderRadius: 8, borderColor: colors.color.primary, borderWidth: 2, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20, }}>
-              <span style={{ fontSize: 18, color: colors.color.primary }}>Gerar Relatório</span>
-            </Button>
+
+          <Button onClick={handleExcel} style={{ alignItems: 'center', alignSelf: 'center', height: 56, borderRadius: 8, borderColor: colors.color.primary, borderWidth: 2, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20, }}>
+              <span style={{ fontSize: 18, color: colors.color.primary }}>Importar dados</span>
+          </Button>
+
+          <Drawer>
+            <DrawerTrigger style={{ alignItems: 'center', alignSelf: 'center', height: 56, borderRadius: 8, backgroundColor: colors.color.primary, justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20, }}>
+              <span style={{ fontSize: 18, color: '#fff' }}>Importar dados</span>
+            </DrawerTrigger>
+            <DrawerContent className='md:py-6 md:px-12 px-6 py-4 gap-y-[14px]' >
+              <ImportData store={id} />
+            </DrawerContent>
+          </Drawer>
         </div>
 
       </CardContent>
