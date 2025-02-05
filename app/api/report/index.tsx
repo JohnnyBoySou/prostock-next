@@ -10,13 +10,11 @@ interface Report extends Record<string, unknown> {
     validade: string;
     observacoes: string;
 }
-
 const formatDateForLaravel = (date: string | null = null) => {
     if(!date) return null;
     const [day, month, year] = date.split("/");
     return `${year}-${month}-${day}`;
 };
-
 //LISTAGEM COM DATA
 export const listReportStore = async (page: number = 1, datac: string, dataf: string) => {
     const c = formatDateForLaravel(datac);
@@ -42,7 +40,6 @@ export const listReportProduct = async (id: number, page: number = 1, datac: str
         throw new Error(error.message);
     }
 }
-
 //SHOW SEM DATA
 export const showReportStore = async (id: number, fornecedor_id: string, produto_id: string) => {
     const forn = fornecedor_id != undefined ? "?fornecedor_id=" + fornecedor_id : "";
@@ -56,7 +53,6 @@ export const showReportStore = async (id: number, fornecedor_id: string, produto
         throw new Error(error.message);
     }
 }
-
 export const showReportProduct = async (id: number, lojaid: number) => {
     try {
         const res = await fetchWithAuthOtherStore("/usuarios/estatisticas/produto/" + id, {
@@ -82,9 +78,8 @@ export const showReportSupplier = async (id: number, lojaid: number) => {
         throw new Error(error.message);
     }
 }
-
 export const showReportProductLine = async (produto_id: string, lojaid: number, fornecedor_id: string | null = null, datac: string | null = null, dataf: string | null = null, tab: string) => {
-    const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : tab == 'Todos' ? '' : 'entrada'
+    const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : tab == 'Todos' ? '' : tab == 'Devoluções' ? 'devolucao' : 'entrada'
     try {
         const res: any = await fetchWithAuthOtherStore("/usuarios/estatisticas/linechat", {
             method: "GET",
@@ -103,7 +98,6 @@ export const showReportProductLine = async (produto_id: string, lojaid: number, 
         throw new Error(error.message);
     }
 }
-
 export const showReportExcel= async (produto_id: string, lojaid: string, fornecedor_id: string, datac: string | null = null, dataf: string | null = null, tab: string, ) => {
     const type = tab === 'Saída' ? 'saida' : tab == 'Entrada' ? 'entrada' : tab == 'Perdas' ? 'perda' : tab == 'Todos' ? '' : 'entrada'
     try {

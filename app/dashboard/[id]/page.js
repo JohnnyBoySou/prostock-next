@@ -33,7 +33,7 @@ export default function DashboardPage() {
   const [produto, setproduto] = useState('');
 
   const [tab, settab] = useState('Saída');
-  const types = [{ name: 'Saída', color: '#3590F3' }, { name: 'Entrada', color: '#019866' }, { name: 'Perdas', color: '#FFB238' }, {name: 'Todos', color: '#EA1E2C'}];
+  const types = [{ name: 'Saída', color: '#3590F3' }, { name: 'Entrada', color: '#019866' }, { name: 'Perdas', color: '#FFB238' }, {name: 'Todos', color: '#EA1E2C'}, {name:'Devoluções', color:'#FF620A'}];
 
   const { data: store, isLoading, } = useQuery({
     queryKey: ["stores report single", id],
@@ -88,10 +88,13 @@ export default function DashboardPage() {
       return res;
     }
   });
-
-  console.log(entradas, saidas, perdas);
-
-
+  const { data: devolucoes, isLoading: loadingDevolucoes, } = useQuery({
+    queryKey: ["stores devolucoes"],
+    queryFn: async () => {
+      const res = await showReportProductLine(null, id, null, ultimoMes, dateNow, 'Devoluções');
+      return res;
+    }
+  });
 
 
 
@@ -110,13 +113,13 @@ export default function DashboardPage() {
         setproduto={setproduto} produto={produto}
       />
       {line ? <SingleCharts tab={tab} line={line?.lineData} loadingDay={loadingDay} /> :
-        <PlaceChart entradas={entradas?.lineData} saidas={saidas?.lineData} perdas={perdas?.lineData} />}
+        <PlaceChart entradas={entradas?.lineData} saidas={saidas?.lineData} perdas={perdas?.lineData} devolucoes={devolucoes?.lineData } />}
     </div>
   )
 }
 
-const PlaceChart = ({ entradas, saidas, perdas }) => {
-  if (!entradas || !saidas || !perdas) return null;
+const PlaceChart = ({ entradas, saidas, perdas, devolucoes }) => {
+  if (!entradas || !saidas || !perdas || !devolucoes) return null;
 
   return (
     <div style={{ gap: '20px', display: 'flex', paddingBottom: 20, marginBottom: 50, flexDirection: 'column', borderWidth: 2, borderColor: '#f1f1f1', margin: '0px 26px', borderRadius: 8, }}>
@@ -173,6 +176,23 @@ const PlaceChart = ({ entradas, saidas, perdas }) => {
             <YAxis tick={{ fill: 'gray', fontSize: 12 }} />
             <Tooltip />
             <Line type="monotone" dataKey="value" stroke='#FFB238' strokeWidth={3}
+              name="Valores" />
+          </LineChart>
+        </ResponsiveContainer>
+
+      </div>
+      <div style={{ borderRadius: 8, padding: 20 }}>
+        <div style={{ marginBottom: 12 }}>
+          <h3 className='text-[18px] md:text-[20px] font-semibold'>Devoluções de produtos</h3>
+          <p className='text-[14px] md:text-[18px] opacity-60'>Últimos 30 dias</p>
+        </div>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={perdas}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="label" tick={{ fill: 'gray', fontSize: 12 }} />
+            <YAxis tick={{ fill: 'gray', fontSize: 12 }} />
+            <Tooltip />
+            <Line type="monotone" dataKey="value" stroke='#FF620A' strokeWidth={3}
               name="Valores" />
           </LineChart>
         </ResponsiveContainer>

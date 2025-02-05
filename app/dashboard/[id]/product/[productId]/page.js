@@ -29,7 +29,7 @@ export default function ProductReportPage() {
   const [dateF, setdateF] = useState(dateNow);
 
   const [tab, settab] = useState('Saída');
-  const types = ['Saída', 'Entrada', 'Perdas',];
+  const types = ['Saída', 'Entrada', 'Perdas','Devoluções',];
   const [fornecedor, setfornecedor] = useState();
 
   const { data, isLoading,  } = useQuery({

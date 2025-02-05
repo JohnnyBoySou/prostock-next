@@ -27,6 +27,15 @@ export const searchProduct = async (name: string) => {
     }
 }
 
+export const importProduct = async (data: any) => {
+    try {
+        const res = await fetchWithAuth("/usuarios/upload/produtos", { method: "POST", data: {"csv": data} });
+        return res;
+    } catch (error: any) {
+        throw new Error(error.message);
+    }
+};
+
 export const addProduct = async (params: Product) => {
     try {
         const res = await fetchWithAuth("/usuarios/produto", { method: "POST", data: params });
