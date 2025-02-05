@@ -34,7 +34,7 @@ export default function DashboardPage() {
   const [produto, setproduto] = useState('');
 
   const [tab, settab] = useState('Saída');
-  const types = [{ name: 'Saída', color: '#3590F3' }, { name: 'Entrada', color: '#019866' }, { name: 'Perdas', color: '#FFB238' }, {name: 'Todos', color: '#EA1E2C'}, {name:'Devoluções', color:'#FF620A'}];
+  const types = [{ name: 'Saída', color: '#3590F3' }, { name: 'Entrada', color: '#019866' }, { name: 'Perdas', color: '#FFB238' }, {name:'Devoluções', color:'#FF620A'}];
 
   const { data: store, isLoading, } = useQuery({
     queryKey: ["stores report single", id],
@@ -188,7 +188,7 @@ const PlaceChart = ({ entradas, saidas, perdas, devolucoes }) => {
           <p className='text-[14px] md:text-[18px] opacity-60'>Últimos 30 dias</p>
         </div>
         <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={perdas}>
+          <LineChart data={devolucoes}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="label" tick={{ fill: 'gray', fontSize: 12 }} />
             <YAxis tick={{ fill: 'gray', fontSize: 12 }} />
@@ -281,7 +281,11 @@ const Store = ({ item, fornecedor, tab, settab,  types, setfornecedor, setprodut
                   <div style={{ backgroundColor: '#fff', flexDirection: 'row', display: 'flex', marginTop: 6, }}>
                     {types.map((type, index) => (
                       <div onClick={() => {
-                        settab(type.name);
+                        if (tab == type.name) {
+                          settab('')
+                        } else {
+                          settab(type.name);
+                        }
                       }} key={index}
                         style={{
                           justifyContent: 'center', alignItems: 'center',
@@ -410,16 +414,20 @@ const Store = ({ item, fornecedor, tab, settab,  types, setfornecedor, setprodut
           </Drawer>
 
           <Button onClick={handleExcel} style={{ alignItems: 'center', alignSelf: 'center', height: 56, borderRadius: 8, borderColor: colors.color.primary, borderWidth: 2, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20, }}>
-              <span style={{ fontSize: 18, color: colors.color.primary }}>Importar dados</span>
+              <span style={{ fontSize: 18, color: colors.color.primary }}>Gerar relatório</span>
           </Button>
 
           <Drawer>
-            <DrawerTrigger style={{ alignItems: 'center', alignSelf: 'center', height: 56, borderRadius: 8, backgroundColor: colors.color.primary, justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20, }}>
+            <DrawerTrigger style={{ alignItems: 'center', alignSelf: 'center', height: 56, borderRadius: 8, backgroundColor: colors.color.blue, justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20, }}>
               <span style={{ fontSize: 18, color: '#fff' }}>Importar dados</span>
             </DrawerTrigger>
-            <DrawerContent className='md:py-6 md:px-12 px-6 py-4 gap-y-[14px]' >
+            <DrawerContent className='md:py-6 md:px-12 px-6 py-4 gap-y-[14px] ' >
               <ImportData store={id} />
+              <DrawerClose className='bg-gray-500/20 p-3 rounded-lg font-semibold container mx-auto'>
+              Fechar
+            </DrawerClose>
             </DrawerContent>
+          
           </Drawer>
         </div>
 
@@ -446,7 +454,7 @@ const SingleCharts = ({ tab, line, loadingDay }) => {
     <div style={{ gap: '20px', display: 'flex', flexDirection: 'column', borderWidth: 2, borderColor: '#f1f1f1', margin: '0px 26px', borderRadius: 8, marginBottom: 20, }}>
       <div style={{ backgroundColor: '#FFF', borderRadius: 8, padding: 20 }}>
         <div style={{ marginBottom: 12 }}>
-          <h3 className='text-[18px] md:text-[24px] font-semibold'>Gráfico de {tab}</h3>
+          <h3 className='text-[18px] md:text-[24px] font-semibold'>Gráfico de {tab == '' ? 'Tudo' : tab}</h3>
         </div>
         <ResponsiveContainer width="100%" height={200} style={{ marginLeft: -30 }}>
           <LineChart data={line}>
