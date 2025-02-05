@@ -1,12 +1,12 @@
 "use client"
-import { useState, useEffect } from 'react'
+import { useState,  } from 'react'
 import { useParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { BarChart, LineChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
-import { Check, ChevronRight, LayoutGrid, Search, Truck, Users } from 'lucide-react'
+import { Check, ChevronRight, LayoutGrid, Search, SheetIcon, Truck, Upload, Users } from 'lucide-react'
 import { showReportStore, showReportProductLine, showReportExcel, } from '@/app/api/report'
 import colors from '@/app/colors'
 import { Button } from '@/components/ui/button';
@@ -271,7 +271,7 @@ const Store = ({ item, fornecedor, tab, settab,  types, setfornecedor, setprodut
         <div className="flex justify-between items-center gap-4">
           <Drawer>
             <DrawerTrigger style={{ alignItems: 'center', alignSelf: 'center', height: 56, borderRadius: 8, backgroundColor: colors.color.primary, justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20, }}>
-              <span style={{ fontSize: 18, color: '#fff' }}>Gerar gráfico</span>
+              <span className='text-[14px] md:text-[18px]' style={{ color: '#fff' }}>Gerar gráfico</span>
             </DrawerTrigger>
             <DrawerContent className='md:py-6 md:px-12 px-6 py-4 gap-y-[14px]' >
               <h2 className='md:text-[32px] text-[24px] hidden md:visible' style={{ fontWeight: 600, textAlign: 'center', }}>Gerar gráfico</h2>
@@ -287,18 +287,19 @@ const Store = ({ item, fornecedor, tab, settab,  types, setfornecedor, setprodut
                           settab(type.name);
                         }
                       }} key={index}
+                        className='md:px-4 md:py-3 px-2 py-1 mr-2 md:mr-4'
                         style={{
                           justifyContent: 'center', alignItems: 'center',
-                          padding: '10px 20px',
                           backgroundColor: tab === type.name ? type.color : type.color + 10,
                           cursor: 'pointer',
                           borderRadius: 8,
-                          margin: '0px 12px 0px 0px',
                         }}>
-                        <span style={{
-                          fontSize: 16,
+                        <span
+                          className='text-[14px] md:text-[20px]'
+                          style={{
                           color: tab === type.name ? '#fff' : type.color,
-                          textTransform: 'uppercase',
+                            textTransform: 'uppercase',
+                            lineHeight: '24px'
                         }}>{type.name}</span>
                       </div>
                     ))}
@@ -408,18 +409,19 @@ const Store = ({ item, fornecedor, tab, settab,  types, setfornecedor, setprodut
               </div>
 
               <DrawerClose>
-                <Button className='md:h-[68px] h-[58px] md:text-[22px] text-[18px]' onClick={handleSearch} style={{ backgroundColor: colors.color.primary, width: '100%', marginTop: 10, }}>Gerar agora</Button>
+                <Button className='md:h-[68px] h-[58px] text-[14px] md:text-[18px]' onClick={handleSearch} style={{ backgroundColor: colors.color.primary, width: '100%', marginTop: 10, }}>Gerar agora</Button>
               </DrawerClose>
             </DrawerContent>
           </Drawer>
 
           <Button onClick={handleExcel} style={{ alignItems: 'center', alignSelf: 'center', height: 56, borderRadius: 8, borderColor: colors.color.primary, borderWidth: 2, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20, }}>
-              <span style={{ fontSize: 18, color: colors.color.primary }}>Gerar relatório</span>
+              <span className='text-[14px] md:text-[18px]' style={{color: colors.color.primary }}>Gerar relatório</span>
           </Button>
 
           <Drawer>
-            <DrawerTrigger style={{ alignItems: 'center', alignSelf: 'center', height: 56, borderRadius: 8, backgroundColor: colors.color.blue, justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20, }}>
-              <span style={{ fontSize: 18, color: '#fff' }}>Importar dados</span>
+            <DrawerTrigger className='px-4' style={{ alignItems: 'center', alignSelf: 'center', height: 56, justifyContent: 'center', borderRadius: 8, backgroundColor: colors.color.blue, justifyContent: 'center', alignItems: 'center',  marginTop: 20, flexDirection: 'column', display: 'flex' }}>
+              <span style={{ fontSize: 18, color: '#fff' }} className='hidden md:block'>Importar dados</span>
+              <Upload size={18} color='#fff' className='block md:hidden text-center self-center '/>
             </DrawerTrigger>
             <DrawerContent className='md:py-6 md:px-12 px-6 py-4 gap-y-[14px] ' >
               <ImportData store={id} />
